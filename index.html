@@ -1,430 +1,194 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Región Centro Norte | Mapa Ejecutivo</title>
-
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
-
-  <style>
-    :root {
-      --starbucks: #006241;
-      --starbucks-dark: #003b2e;
-      --bg: #f4f6f5;
-      --card: #ffffff;
-      --border: #d7ddd9;
-      --text: #1f2933;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    header {
-      background: var(--starbucks);
-      color: white;
-      padding: 14px 18px;
-      font-size: 18px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .subtitle {
-      font-size: 12px;
-      font-weight: normal;
-      opacity: 0.9;
-    }
-
-    #controls {
-      padding: 10px;
-      background: var(--card);
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      box-shadow: 0 2px 6px rgba(0,0,0,.15);
-      z-index: 999;
-      position: relative;
-    }
-
-    select, input, button {
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-      background: white;
-      min-height: 38px;
-    }
-
-    input { min-width: 220px; }
-
-    #resetBtn {
-      background: var(--starbucks);
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    #summary {
-      background: #ffffff;
-      padding: 8px 12px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      border-bottom: 1px solid var(--border);
-      font-size: 13px;
-    }
-
-    .pill {
-      background: #edf4f1;
-      border: 1px solid #d7e7df;
-      border-radius: 999px;
-      padding: 6px 10px;
-      font-weight: bold;
-    }
-
-    #map {
-      height: calc(100vh - 164px);
-      width: 100%;
-    }
-
-    .popup {
-      min-width: 270px;
-      max-width: 330px;
-    }
-
-    .popup h3 {
-      margin: 0 0 8px;
-      color: var(--starbucks);
-      font-size: 18px;
-    }
-
-    .section {
-      margin-top: 8px;
-      font-weight: bold;
-      color: var(--starbucks-dark);
-      border-top: 1px solid #ddd;
-      padding-top: 7px;
-    }
-
-    .row {
-      display: flex;
-      justify-content: space-between;
-      gap: 14px;
-      font-size: 13px;
-      margin: 4px 0;
-    }
-
-    .label {
-      font-weight: bold;
-      color: #444;
-    }
-
-    .value {
-      color: #222;
-      text-align: right;
-    }
-
-    .error {
-      display: none;
-      background: #fff3f3;
-      color: #8a1f1f;
-      border: 1px solid #f1b7b7;
-      padding: 8px 12px;
-      font-weight: bold;
-    }
-
-    @media (max-width: 760px) {
-      header {
-        font-size: 16px;
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      #controls {
-        gap: 6px;
-      }
-
-      input, select, button {
-        width: 100%;
-        font-size: 13px;
-      }
-
-      #map {
-        height: calc(100vh - 310px);
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RSA Digital 2.0 | Checklist ICA Starbucks</title>
+<style>
+:root{
+  --green:#006241;--green2:#00754A;--dark:#113b2f;--cream:#f7f3eb;--paper:#fff;--line:#d8e3dd;--muted:#60746b;
+  --red:#c62828;--red2:#fceaea;--amber:#e8a900;--amber2:#fff4cf;--blue:#1f6f8b;--soft:0 10px 28px rgba(0,0,0,.08);--shadow:0 18px 45px rgba(0,0,0,.12)
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#f7f3eb 0%,#edf5f1 100%);color:#183c32}
+.hero{background:linear-gradient(135deg,#003d2b,#006241 60%,#0b7b53);color:white;padding:24px 18px 88px;border-bottom-left-radius:30px;border-bottom-right-radius:30px}
+.hero-inner{max-width:1280px;margin:auto;display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center}
+.brand{display:flex;gap:14px;align-items:center}
+.logo{width:58px;height:58px;border-radius:50%;background:white;color:var(--green);display:grid;place-items:center;font-size:32px;font-weight:900;box-shadow:var(--soft)}
+h1{margin:0;font-size:clamp(26px,4vw,46px);letter-spacing:-.7px;line-height:1}
+.subtitle{margin:8px 0 0;color:#dcefe7;font-size:15px}
+.hero-badge{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:14px 18px;border-radius:18px;text-align:right;max-width:390px}
+.hero-badge b{display:block;font-size:18px;margin-bottom:4px}
+.wrap{max-width:1280px;margin:-68px auto 40px;padding:0 18px}
+.panel{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:stretch}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);padding:20px}
+h2{margin:0 0 14px;color:var(--green);font-size:23px}
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.flow-step{border:1px solid #dce8e1;border-radius:18px;padding:14px;background:#fbfdfc;min-height:142px}
+.flow-step .emoji{font-size:31px}
+.flow-step b{display:block;color:var(--green);margin:8px 0 4px}
+.flow-step p{margin:0;color:var(--muted);font-size:13px;line-height:1.35}
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.rule{border-radius:18px;padding:14px;color:white;min-height:110px}
+.rule h3{margin:0 0 7px;font-size:17px}
+.rule ul{margin:0;padding-left:18px;font-size:13px;line-height:1.45}
+.celebrar{background:#198b4f}.supervisar{background:#e3a600;color:#1e2d27}.apoyar{background:#c62828}
+.audit-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.kpi{border-radius:17px;padding:12px;background:#f8faf9;border:1px solid #dce8e1;text-align:center}
+.kpi .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;white-space:nowrap}
+.kpi .value{font-size:31px;font-weight:900;margin-top:4px;color:var(--green)}
+.status{grid-column:1/-1;border-radius:20px;padding:18px;text-align:center;color:white;font-size:30px;font-weight:900;background:#198b4f;letter-spacing:.4px}
+.status.supervisar-bg{background:#e3a600;color:#1d2d27}.status.apoyar-bg{background:#c62828;color:white}
+.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+.field label{display:block;font-weight:800;font-size:12px;color:var(--green);margin-bottom:6px}
+.field input,.field select{width:100%;border:1px solid var(--line);border-radius:14px;padding:11px 12px;font-size:14px;background:white}
+.instruction{margin-top:16px;background:#f1faf5;border:1px solid #cfe5da;border-left:6px solid var(--green);border-radius:16px;padding:14px;color:#24493f;line-height:1.38;font-size:14px}
+.toolbar{position:sticky;top:0;z-index:20;margin:18px 0;background:rgba(247,243,235,.94);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:22px;box-shadow:var(--soft);padding:12px;display:grid;grid-template-columns:1fr auto auto auto;gap:10px;align-items:center}
+.search{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:16px;font-size:15px}
+.btn{border:0;border-radius:16px;padding:12px 15px;font-weight:900;cursor:pointer;background:var(--green);color:white;transition:.15s;white-space:nowrap}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.04)}.btn.secondary{background:#eef5f1;color:var(--green);border:1px solid var(--line)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}
+.chip{border:1px solid var(--line);background:white;border-radius:999px;padding:9px 13px;font-weight:900;color:var(--green);cursor:pointer}
+.chip.active{background:var(--green);color:white}
+.content{display:grid;grid-template-columns:292px 1fr;gap:18px}
+.sidebar{position:sticky;top:92px;align-self:start}
+.legend h3{margin:0 0 10px;color:var(--green)}
+.legend-row{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding:10px 0;font-size:14px}
+.legend-row b{color:var(--green)}
+.items{display:grid;gap:12px}
+.section-title{margin:10px 0 2px;padding:12px 16px;background:#0b5139;color:white;border-radius:18px;font-size:18px;display:flex;justify-content:space-between;align-items:center}
+.item{background:white;border:1px solid var(--line);border-radius:20px;box-shadow:var(--soft);overflow:hidden}
+.item.fail{border-color:#e2a1a1;box-shadow:0 0 0 3px rgba(198,40,40,.08),var(--soft)}
+.item.comply{border-color:#a9d8bd;box-shadow:0 0 0 3px rgba(0,117,74,.07),var(--soft)}
+.item.na{opacity:.82}
+.item.exportable{}
+.item-head{display:grid;grid-template-columns:1fr auto;gap:12px;padding:15px;align-items:start}
+.question{font-weight:900;color:#173b31;font-size:15px;line-height:1.3}
+.points{font-size:18px;font-weight:900;color:var(--green);white-space:nowrap;text-align:right}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.badge{border-radius:999px;padding:5px 9px;font-weight:900;font-size:11px;border:1px solid var(--line);background:#f8faf9;color:#2f4f45}
+.badge.crit{background:#feecec;color:#a71919;border-color:#f6c1c1}.badge.may{background:#fff2cf;color:#765100;border-color:#f5d375}.badge.men{background:#edf7ff;color:#14577a;border-color:#cbe4f5}.badge.risk{background:#2c2020;color:white;border-color:#2c2020}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.status-btn,.mini-btn{border:1px solid var(--line);background:#f8faf9;color:#24493f;border-radius:999px;padding:9px 12px;font-weight:900;cursor:pointer}
+.status-btn.active.comply{background:#e8f6ee;border-color:#67bd87;color:#006241}.status-btn.active.fail{background:#fdecec;border-color:#db7777;color:#a71919}.status-btn.active.na{background:#f1f1f1;border-color:#cfcfcf;color:#555}
+.mini-btn{border-radius:12px;color:var(--green);padding:8px 10px}
+.context,.evidence{display:none;border-top:1px solid var(--line);padding:14px 15px;background:#fbfdfc;color:#35534a;line-height:1.45;font-size:13px}
+.context.open,.evidence.open{display:block}
+.evidence{background:white;border-top:1px dashed var(--line)}
+.evidence-grid{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:12px}
+.evidence label{display:block;font-weight:900;color:var(--green);font-size:12px;margin-bottom:6px}
+.evidence textarea,.evidence input[type=text],.evidence input[type=date],.evidence input[type=file]{width:100%;border:1px solid var(--line);border-radius:14px;padding:10px;background:#f8faf9;font-family:inherit}
+.evidence textarea{min-height:76px;resize:vertical}
+.preview{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap}
+.preview img{width:74px;height:74px;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
+.empty{display:none;text-align:center;padding:26px;background:white;border-radius:20px;color:var(--muted)}
+.footer{margin:26px 0;text-align:center;color:var(--muted);font-size:12px}
+.print-only{display:none}
+@media(max-width:1080px){.panel,.content{grid-template-columns:1fr}.sidebar{position:relative;top:auto}.flow{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.hero-inner,.flow,.rules,.audit-grid,.meta,.evidence-grid{grid-template-columns:1fr}.hero-badge{text-align:left;max-width:none}.toolbar{grid-template-columns:1fr}.btn{width:100%}.item-head{grid-template-columns:1fr}.points{text-align:left}}
+@media print{
+  .toolbar,.filters,.sidebar,.mini-btn,.status-btn,.actions,.hero-badge,.evidence input[type=file],.footer{display:none!important}
+  body.pdf-mode .item:not(.exportable){display:none!important}
+  .hero{padding:18px;border-radius:0}.wrap{margin:0 auto;padding:0 10px}.panel{grid-template-columns:1fr}.card{box-shadow:none;border:1px solid #ccc}
+  .context.open,.evidence.open{display:block}.print-only{display:block}body{background:white;color:#111}.status{font-size:24px}
+}
+</style>
 </head>
-
 <body>
-  <header>
-    <div>☕ Región Centro Norte | Mapa Ejecutivo</div>
-    <div class="subtitle">Filtros por DM, Cobertura, Tipo, Tier y Formato Comercial</div>
-  </header>
-
-  <div id="controls">
-    <input id="search" type="text" placeholder="Buscar tienda o CC" />
-
-    <select id="dmFilter">
-      <option value="">DM</option>
-    </select>
-
-    <select id="coberturaFilter">
-      <option value="">Cobertura</option>
-    </select>
-
-    <select id="tierFilter">
-      <option value="">Tier</option>
-    </select>
-
-    <select id="tipoFilter">
-      <option value="">Formato</option>
-    </select>
-
-    <select id="comercialFilter">
-      <option value="">Formato Comercial</option>
-    </select>
-
-    <button id="resetBtn" type="button">Limpiar filtros</button>
+<header class="hero">
+  <div class="hero-inner">
+    <div class="brand"><div class="logo">★</div><div><h1>RSA Digital 2.0</h1><p class="subtitle">Checklist ICA | Semáforo RSA | Evidencia y corrección documentada</p></div></div>
+    <div class="hero-badge"><b>Uso rápido</b>Enfócate en lo que observas. Solo <b>No cumple</b> penaliza. <b>Cumple con foto</b> documenta corrección o evidencia positiva.</div>
   </div>
-
-  <div id="summary">
-    <span class="pill" id="visibleCount">Tiendas visibles: 0</span>
-    <span class="pill" id="edomexCount">Estado de México: 0</span>
-    <span class="pill" id="cdmxCount">Ciudad de México: 0</span>
-    <span class="pill" id="dtCount">DT: 0</span>
+</header>
+<main class="wrap">
+  <section class="panel">
+    <div class="card">
+      <h2>🚦 Enfoque del checklist</h2>
+      <div class="flow">
+        <div class="flow-step"><div class="emoji">👀</div><b>1. Observa rápido</b><p>No necesitas marcar todo. Solo interactúa cuando detectes algo o quieras dejar evidencia.</p></div>
+        <div class="flow-step"><div class="emoji">✅</div><b>2. Cumple</b><p>No penaliza. Puedes agregar foto opcional para comprobar corrección o buena ejecución.</p></div>
+        <div class="flow-step"><div class="emoji">❌</div><b>3. No cumple</b><p>Activa penalización, descuenta ICA y suma al semáforo RSA cuando aplique.</p></div>
+        <div class="flow-step"><div class="emoji">📄</div><b>4. Exporta valor</b><p>El PDF/JSON solo incluye penalizaciones o puntos con foto/comentario.</p></div>
+      </div>
+      <div class="rules">
+        <div class="rule celebrar"><h3>🟢 CELEBRAR</h3><ul><li>0 Críticos</li><li>0 a 2 Mayores</li><li>0 a 5 Menores</li></ul></div>
+        <div class="rule supervisar"><h3>🟡 SUPERVISAR</h3><ul><li>1 a 2 Críticos</li><li>3 a 4 Mayores</li><li>6 o más Menores</li></ul></div>
+        <div class="rule apoyar"><h3>🔴 APOYAR</h3><ul><li>3 o más Críticos</li><li>5 o más Mayores</li><li>Acción inmediata</li></ul></div>
+      </div>
+      <div class="instruction"><b>Instrucción clave:</b> La auditoría es rápida y enfocada en lo observado. Si está bien, puedes dejarlo sin evaluar o marcar <b>Cumple</b>. Si marcas <b>No cumple</b>, se activa el impacto RSA/ICA. Al exportar, solo saldrá lo penalizado o lo que tenga evidencia, comentario o corrección documentada.</div>
+    </div>
+    <div class="card audit">
+      <h2>📊 Resultado de Auditoría</h2>
+      <div class="audit-grid">
+        <div class="kpi"><div class="label">ICA</div><div class="value" id="icaScore">100</div></div>
+        <div class="kpi"><div class="label">Críticos</div><div class="value" id="critCount">0</div></div>
+        <div class="kpi"><div class="label">Mayores</div><div class="value" id="mayCount">0</div></div>
+        <div class="kpi"><div class="label">Menores</div><div class="value" id="menCount">0</div></div>
+        <div class="kpi"><div class="label">Evidencias</div><div class="value" id="evCount">0</div></div>
+        <div class="status" id="rsaStatus">🟢 CELEBRAR</div>
+      </div>
+      <div class="meta">
+        <div class="field"><label>Tienda</label><input id="store" placeholder="Nombre / CeCo"></div>
+        <div class="field"><label>Auditor</label><input id="auditor" placeholder="Nombre"></div>
+        <div class="field"><label>Fecha</label><input id="date" type="date"></div>
+        <div class="field"><label>Turno</label><select id="shift"><option>Apertura</option><option>Intermedio</option><option>Cierre</option></select></div>
+      </div>
+    </div>
+  </section>
+  <div class="toolbar">
+    <input class="search" id="search" placeholder="Buscar penalización, palabra clave o contexto..." />
+    <button class="btn secondary" id="clearBtn">Limpiar</button>
+    <button class="btn secondary" id="printBtn">PDF inteligente</button>
+    <button class="btn" id="exportBtn">Exportar JSON</button>
   </div>
-
-  <div id="errorBox" class="error"></div>
-  <div id="map"></div>
-
-  <script>
-    const map = L.map("map").setView([19.50, -99.18], 11);
-
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "Mapa Ejecutivo Región Centro Norte"
-    }).addTo(map);
-
-    let allData = [];
-    let markers = [];
-    let markerBounds = [];
-
-    const colors = {
-      "Enrique César": "#00704A",
-      "Nancy Rodríguez": "#0073CF",
-      "Vanessa Carreño": "#8E44AD",
-      "Veronica García": "#F39C12",
-      "Yazmin Chabela": "#C0392B",
-      "Yazmin García": "#8D6E63",
-      "Yazmin Haydee": "#8D6E63",
-      "Yazmin Chabela Guadarrama": "#C0392B",
-      "Yazmin García González": "#8D6E63"
-    };
-
-    function clean(value) {
-      return String(value ?? "").trim();
-    }
-
-    function normalize(value) {
-      return clean(value)
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toUpperCase();
-    }
-
-    function getColor(dm) {
-      return colors[clean(dm)] || "#006241";
-    }
-
-    function addOptions(id, values) {
-      const select = document.getElementById(id);
-
-      while (select.options.length > 1) {
-        select.remove(1);
-      }
-
-      const cleanValues = [...new Set(values.map(clean).filter(Boolean))]
-        .sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
-
-      cleanValues.forEach(v => {
-        const opt = document.createElement("option");
-        opt.value = v;
-        opt.textContent = v;
-        select.appendChild(opt);
-      });
-    }
-
-    function popupTemplate(d) {
-      return `
-        <div class="popup">
-          <h3>${d["CC Nombre"] || ""}</h3>
-
-          <div class="row"><span class="label">CC</span><span class="value">${d["CC"] || ""}</span></div>
-          <div class="row"><span class="label">DM</span><span class="value">${d["DM"] || ""}</span></div>
-          <div class="row"><span class="label">Apertura</span><span class="value">${d["Fecha de Apertura"] || ""}</span></div>
-          <div class="row"><span class="label">Municipio</span><span class="value">${d["Municipio o Delegación"] || ""}</span></div>
-          <div class="row"><span class="label">Cobertura</span><span class="value">${d["Cobertura"] || ""}</span></div>
-          <div class="row"><span class="label">Tipo</span><span class="value">${d["Formato"] || ""}</span></div>
-          <div class="row"><span class="label">Formato Comercial</span><span class="value">${d["Formato - Comercial"] || ""}</span></div>
-          <div class="row"><span class="label">Tier</span><span class="value">${d["TIER"] || ""}</span></div>
-
-          <div class="section">🤝 Partner</div>
-          <div class="row"><span class="label">Rolling</span><span class="value">${d["Rolling"] || ""}</span></div>
-
-          <div class="section">💰 Negocio</div>
-          <div class="row"><span class="label">Ventas</span><span class="value">${d["Ventas"] || ""}</span></div>
-         <div class="row"><span class="label">Dif ppto %</span><span class="value">${d["Dif ppto%"] || d["Dif ppto %"] || ""}</span></div>
-          <div class="row"><span class="label">TPLH</span><span class="value">${d["TPLH"] || ""}</span></div>
-          <div class="row"><span class="label">IPLH</span><span class="value">${d["IPLH"] || ""}</span></div>
-          <div class="row"><span class="label">Labor</span><span class="value">${d["Labor"] || d["Labor %"] || ""}</span></div>
-          <div class="row"><span class="label">Dif Labor %</span><span class="value">${d["Dif Labor%"] || d["Dif Labor %"] || ""}</span></div>
-          <div class="row"><span class="label">OMT</span><span class="value">${d["OMT #"] || ""}</span></div>
-          <div class="row"><span class="label">Costo</span><span class="value">${d["Costo"] || ""}</span></div>
-          <div class="row"><span class="label">Dif costo %</span><span class="value">${d["Dif costo%"] || d["Dif costo %"] || ""}</span></div>
-          <div class="row"><span class="label">EBITDA</span><span class="value">${d["EBITDA"] || ""}</span></div>
-          <div class="row"><span class="label">Dif EBITDA</span><span class="value">${d["Dif EBITDA %"] || d["dif EBITDA %"] || ""}</span></div>
-
-          <div class="section">☕ Cliente</div>
-          <div class="row"><span class="label">NPS</span><span class="value">${d["NPS"] || ""}</span></div>
-          <div class="row"><span class="label">Conexión</span><span class="value">${d["Conexión"] || ""}</span></div>
-          <div class="row"><span class="label">Bebida</span><span class="value">${d["Bebida"] || ""}</span></div>
-          <div class="row"><span class="label">CTC</span><span class="value">${d["CTC"] || ""}</span></div>
-
-          <div class="section">🚗 Drive Thru</div>
-          <div class="row"><span class="label">DT Time</span><span class="value">${d["DT Time"] || "No hay valor"}</span></div>
-          <div class="row"><span class="label">DT AA</span><span class="value">${d["Tiempo DT AA"] || "No hay valor"}</span></div>
-
-          <div class="section">📅 Corte</div>
-          <div class="row"><span class="label">YTD</span><span class="value">${d["Corte YTD"] || ""}</span></div>
-        </div>`;
-    }
-
-    function clearMarkers() {
-      markers.forEach(m => map.removeLayer(m));
-      markers = [];
-      markerBounds = [];
-    }
-
-    function updateSummary(filtered) {
-      const edomex = filtered.filter(d => normalize(d["Cobertura"]).includes("ESTADO")).length;
-      const cdmx = filtered.filter(d => normalize(d["Cobertura"]).includes("CIUDAD")).length;
-      const dt = filtered.filter(d => normalize(d["Formato"]).includes("DRIVE")).length;
-
-      document.getElementById("visibleCount").textContent = `Tiendas visibles: ${filtered.length}`;
-      document.getElementById("edomexCount").textContent = `Estado de México: ${edomex}`;
-      document.getElementById("cdmxCount").textContent = `Ciudad de México: ${cdmx}`;
-      document.getElementById("dtCount").textContent = `DT: ${dt}`;
-    }
-
-    function renderMap() {
-      clearMarkers();
-
-      const search = normalize(document.getElementById("search").value);
-      const dm = clean(document.getElementById("dmFilter").value);
-      const cobertura = clean(document.getElementById("coberturaFilter").value);
-      const tier = clean(document.getElementById("tierFilter").value);
-      const tipo = clean(document.getElementById("tipoFilter").value);
-      const comercial = clean(document.getElementById("comercialFilter").value);
-
-      const filtered = allData.filter(d => {
-        const nombre = normalize(d["CC Nombre"]);
-        const cc = normalize(d["CC"]);
-
-        return (!search || nombre.includes(search) || cc.includes(search))
-          && (!dm || clean(d["DM"]) === dm)
-          && (!cobertura || clean(d["Cobertura"]) === cobertura)
-          && (!tier || clean(d["TIER"]) === tier)
-          && (!tipo || clean(d["Formato"]) === tipo)
-          && (!comercial || clean(d["Formato - Comercial"]) === comercial);
-      });
-
-      filtered.forEach(d => {
-        const lat = parseFloat(clean(d["Latitud"]));
-        const lng = parseFloat(clean(d["Longitud"]));
-
-        if (!isNaN(lat) && !isNaN(lng)) {
-          const marker = L.circleMarker([lat, lng], {
-            radius: 8,
-            color: getColor(d["DM"]),
-            fillColor: getColor(d["DM"]),
-            fillOpacity: 0.9,
-            weight: 2
-          }).addTo(map);
-
-          marker.bindPopup(popupTemplate(d));
-          markers.push(marker);
-          markerBounds.push([lat, lng]);
-        }
-      });
-
-      updateSummary(filtered);
-
-      if (markerBounds.length > 0) {
-        map.fitBounds(markerBounds, { padding: [25, 25], maxZoom: 13 });
-      }
-    }
-
-    Papa.parse("data.csv", {
-      download: true,
-      header: true,
-      skipEmptyLines: true,
-      transformHeader: header => clean(header),
-      complete: function(results) {
-        const errorBox = document.getElementById("errorBox");
-
-        allData = results.data
-          .map(row => {
-            const cleanRow = {};
-            Object.keys(row || {}).forEach(key => {
-              cleanRow[clean(key)] = row[key];
-            });
-            return cleanRow;
-          })
-          .filter(d => clean(d["CC Nombre"]) || clean(d["CC"]));
-
-        addOptions("dmFilter", allData.map(d => d["DM"]));
-        addOptions("coberturaFilter", allData.map(d => d["Cobertura"]));
-        addOptions("tierFilter", allData.map(d => d["TIER"]));
-        addOptions("tipoFilter", allData.map(d => d["Formato"]));
-        addOptions("comercialFilter", allData.map(d => d["Formato - Comercial"]));
-
-        errorBox.style.display = "none";
-        renderMap();
-      },
-      error: function(err) {
-        const errorBox = document.getElementById("errorBox");
-        errorBox.textContent = "No se pudo leer data.csv. Verifica que el archivo esté en el mismo repositorio y se llame exactamente data.csv.";
-        errorBox.style.display = "block";
-        console.error("Error leyendo CSV:", err);
-      }
-    });
-
-    document.getElementById("resetBtn").addEventListener("click", () => {
-      document.getElementById("search").value = "";
-      document.getElementById("dmFilter").value = "";
-      document.getElementById("coberturaFilter").value = "";
-      document.getElementById("tierFilter").value = "";
-      document.getElementById("tipoFilter").value = "";
-      document.getElementById("comercialFilter").value = "";
-      renderMap();
-    });
-
-    document.querySelectorAll("select, input").forEach(el => {
-      el.addEventListener("input", renderMap);
-      el.addEventListener("change", renderMap);
-    });
-  </script>
+  <div class="filters" id="filters"></div>
+  <section class="content">
+    <aside class="card sidebar legend">
+      <h3>Lectura rápida</h3>
+      <div class="legend-row"><span>✅ Cumple</span><b>No penaliza</b></div>
+      <div class="legend-row"><span>❌ No cumple</span><b>Penaliza</b></div>
+      <div class="legend-row"><span>➖ N/A</span><b>No aplica</b></div>
+      <div class="legend-row"><span>🔴 Crítico</span><b>-5 / RSA</b></div>
+      <div class="legend-row"><span>🟠 Mayor</span><b>-3 / RSA</b></div>
+      <div class="legend-row"><span>🟡 Menor</span><b>-1 / RSA</b></div>
+      <div class="legend-row"><span>⚫ Riesgo</span><b>ICA sin RSA</b></div>
+      <p style="font-size:13px;color:var(--muted);line-height:1.45;margin-bottom:0">La foto es opcional. Úsala para evidenciar desviación, corrección inmediata o cumplimiento relevante.</p>
+    </aside>
+    <div><div class="items" id="items"></div><div class="empty" id="empty">No hay resultados con ese filtro.</div></div>
+  </section>
+  <div class="footer">RSA Digital 2.0 | Compatible con GitHub Pages | Las fotos se mantienen localmente en el navegador para exportar o imprimir.</div>
+</main>
+<script>
+const DATA = [{"id": "I001", "question": "Partner enfermo participa en preparación de alimentos o bebidas", "code": "1.01.02-a. 5 pts", "context": "1.01.02-a. 5.0 pts. FACTOR CRÍTICO ICA Y RSA: para asegurar que las enfermedades infecciosas no son transmitidas a los clientes y baristas, no se permite trabajar en área de preparación de alimentos a nadie que se encuentre enfermo. Se excluye de cualquier operación en la que se pueda contaminar el producto a los partners que tengan los siguientes síntomas: (tos severa, flujo nasal, diarrea, vómito, ictericia, fiebre/escalofríos, lesiones expuestas (como quemaduras) en la mano/muñeca/brazo o cualquier enfermedad de transmisión o infecciosa (ej. Hepatitis, salmonella, shigella, etc.). Los vendajes en las manos/muñecas deben estar cubiertos con un guante de un solo uso. Se penaliza a partir de 1 incumplimiento / ID. 29772", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I002", "question": "Lavado de manos incompleto o procedimiento de cinco pasos incorrecto", "code": "1.01.05-a. 5 pts", "context": "1.01.05-a. 5.0 pts. FACTOR CRÍTICO ICA: las manos se deben lavar siguiendo el procedimiento de los 5 pasos (mojar las manos y antebrazos, colocar jabón, frotar manos y antebrazos con jabón y tallar con cepillo para uñas, enjuagar y secar) y solo en la tarja exclusiva de lavado de manos (cuando se cuenta con ella). Se penaliza a partir de 1 incumplimiento / ID. 29781", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I003", "question": "No realiza lavado de manos después de posible contaminación", "code": "1.01.05-b. 5 pts", "context": "1.01.05-b. 5.0 pts. FACTOR CRÍTICO ICA Y RSA: las manos deben lavarse cuando se contaminen, puedan haberse contaminado o antes de usar guantes. Se permite tocar cubrebocas y/o cara siempre que no se realice preparación de alimentos (se puede dispensar bebida). Se penaliza a partir de 1 incumplimiento / ID. 29782", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I004", "question": "Producto no aprobado destinado para consumo o venta al cliente", "code": "3.01.05-i. 5 pts", "context": "3.01.05-i. 5.0 pts. FACTOR CRÍTICO ICA Y RSA: solo los alimentos aprobados que se encuentran en la lista de productos aprobados de Starbucks deben ser destinados para consumo del cliente. Se penaliza a partir de 1 incumplimiento / ID. 29837", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I005", "question": "Contacto directo de manos con alimento listo para consumo", "code": "3.02.04-b. 5 pts", "context": "3.02.04-b. 5.0 pts. FACTOR CRÍTICO ICA Y RSA: No se permite en ningún momento el contacto de las manos sin guantes con productos alimenticios listos para comer fuera de su empaque (incluyendo hielo e ingredientes de bebidas). Los guantes no se reutilizan. Se penaliza a partir de 1 incumplimiento / ID. 29839", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I006", "question": "Alimento contaminado física, química, biológica o en mal estado", "code": "3.02.04-e. 5 pts", "context": "3.02.04-e. 5.0 pts. FACTOR CRÍTICO ICA Y RSA: todos los alimentos deben estar libres de cualquier fuente de contaminación crítica. La contaminación crítica de los alimentos incluye cualquier peligro químico; cualquier peligro físico que pueda crear un riesgo de laceración como: vidrio, plástico quebradizo, virutas de metal, astillas de madera; cualquier peligro de asfixia (7-25 mm de diámetro) o cualquier peligro físico que pueda conllevar un peligro biológico (materia fecal, animales / insectos muertos que sean vectores de enfermedad como mosquitos, moscas, cucarachas, etc). Se penaliza en caso de detectar alimentos en exhibición con hongos o en mal estado que de mal aspecto y afecte a la imagen de la tienda. Se penaliza a partir de 1 incumplimiento. / ID. 29840", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I007", "question": "Producto TCS sin fecha vigente o identificación correcta", "code": "3.02.05-b. 5 pts", "context": "3.02.05-b. 5.0 pts. FACTOR CRÍTICO ICA Y RSA: Los productos alimenticios TCS deben tener fecha de caducidad o vida secundaria legible y vigente, de acuerdo con el lineamiento de la marca. Se penaliza a partir de 1 incumplimiento. / ID. 29844", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I008", "question": "Alimentos calientes por debajo de temperatura mínima requerida", "code": "3.02.06-a. 5 pts", "context": "3.02.06-a. 5.0 pts. FACTOR CRÍTICO: Los alimentos calientes listos para servirse se mantienen a una temperatura mínima de 60°C (140°F). Se tomarán las temperaturas de 3 alimentos previamente montados, se penaliza con 2 o más que incumpla. / ID. 29847", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I009", "question": "Productos refrigerados arriba de temperatura permitida para conservación", "code": "4.01.01-a. 5 pts", "context": "4.01.01-a. 5.0 pts. FACTOR CRÍTICO ICA Y RSA: la temperatura interna de los alimentos refrigerados se encuentra máximo a 5°C (41°F). Se debe de evaluar un producto en cada refrigerador de FOH. Se mide la temperatura de 1 alimento TCS que no haya sido recientemente procesado (4 horas en etiqueta). En caso de observar alimentos TCS almacenados durante 15 min fuera de refrigeración, tomar temperatura y penalizar si se encuentra fuera de rango. En FOH se penaliza a partir de 2 equipos con 1 alimento fuera de temperatura. En BOH se penaliza a partir de 2 incumplimientos / ID. 29872", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I010", "question": "Resultados microbiológicos fuera de especificación sin plan correctivo", "code": "5.01.02-b. 5 pts", "context": "5.01.02-b. 5.0 pts. FACTOR CRÍTICO ICA: Se muestran los resultados de análisis microbiológicos en ICA WEB de agua purificada y hielo, y se encuentran dentro de especificación. Se penaliza si hay una desviación en los resultados y no presentan plan de acción correspondiente registrado en ICA WEB (sólo aplica con resultados con antigüedad de 3 días). Se penaliza la reincidencia en la desviación de los resultados (de agua o hielo). Se penaliza a partir de 1 incumplimiento / ID. 29927", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I011", "question": "Tomas de agua con sarro, moho, óxido o suciedad", "code": "5.01.02-c. 5 pts", "context": "5.01.02-c. 5.0 pts. FACTOR CRÍTICO ICA: las tomas de agua para bebidas o tomas de agua para preparación deben permanecer limpias y en buen estado. Se penaliza si se encuentra cualquier tipo de suciedad, sarro, óxido, algas o moho. Se penaliza a partir de 1 incumplimiento / ID. 29928", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I012", "question": "Máquina de hielo con moho, sarro o suciedad visible", "code": "5.01.03-a. 5 pts", "context": "5.01.03-a. 5.0 pts. FACTOR CRÍTICO ICA Y RSA: la máquina de hielo y depósitos de hielo para consumo, se encuentran limpia (libre de moho/sarro) en zona de resbaladilla y dentro de la cabina de almacenaje de hielo. Se evalúa con lámpara y servilleta o trapo blanco. Se penaliza a partir de 1 incumplimiento / ID. 29930", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I013", "question": "Trapos utilizados fuera del código de color establecido", "code": "6.01.01-d. 5 pts", "context": "6.01.01-d. 5.0 pts. FACTOR CRÍTICO ICA: se cuenta con un código de color establecido para uso de trapos. Utilizan los trapos según el código de color establecido. Se penaliza a partir de 1 incumplimiento / ID. 29958", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I014", "question": "Máquina sanitizadora con suciedad, hongo, basura o sarro", "code": "6.02.07-c. 5 pts", "context": "6.02.07-c. 5.0 pts. FACTOR CRÍTICO ICA: máquina sanitizadora con exceso de suciedad, hongo, basura y/o sarro. Se penaliza a partir de 1 incumplimiento / ID. 29985", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I015", "question": "Sanitizante fuera de concentración requerida para desinfección", "code": "7.01.04-a. 5 pts", "context": "7.01.04-a. 5.0 pts. FACTOR CRÍTICO ICA-RSA: los recipientes con sanitizante de varilla y área de food, deben tener la concentración requerida. Se debe introducir la tira reactiva vigente en la solución sanitizante por 10 segundos y posteriormente comparar el resultado con la escala de color. Se penaliza a partir de 1 incumplimiento. / ID. 30029", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I016", "question": "Presencia de cucarachas vivas o muertas en tienda", "code": "8.01.01-a. 5 pts", "context": "8.01.01-a. 5.0 pts. FACTOR CRÍTICO ICA Y RSA: la tienda está libre de cucarachas vivas o muertas en cualquier área. Se penaliza a partir de 1 incumplimiento / ID. 30045", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I017", "question": "Evidencia de roedores, excretas o producto roído", "code": "8.01.01-c. 5 pts", "context": "8.01.01-c. 5.0 pts. FACTOR CRÍTICO ICA Y RSA: la tienda está libre de roedores muertos en cualquier área de la tienda. Se penaliza evidencia de excretas o producto roído. / ID. 30047", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I018", "question": "Mosca doméstica sobre alimentos o superficies de contacto", "code": "8.01.01-d. 5 pts", "context": "8.01.01-d. 5.0 pts. FACTOR CRÍTICO ICA Y RSA: la tienda está libre de mosca doméstica en superficies de contacto con alimentos o alimentos, se penaliza a partir de 1 organismo. / ID. 30048", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I019", "question": "Mosca de fruta sobre alimentos o superficies de contacto", "code": "8.01.01-e. 5 pts", "context": "8.01.01-e. 5.0 pts. FACTOR CRÍTICO ICA Y RSA: la tienda está libre de moscas de fruta en superficies de contacto con alimentos o alimentos, se penaliza a partir de 1 organismo. / ID. 30049", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I020", "question": "Presencia de aves u otras plagas en áreas operativas", "code": "8.01.01-f. 5 pts", "context": "8.01.01-f. 5.0 pts. FACTOR CRÍTICO: las áreas están libres de otras plagas (Aves y otras plagas). Se penaliza a partir de 1 ave viva o 5 organismos de otras plagas vivos / ID. 30050", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I021", "question": "Lavaloza no cumple temperatura, ppm o sanitización requerida", "code": "10.01.02-c. 5 pts", "context": "10.01.02-c. 5.0 pts. FACTOR CRÍTICO ICA Y RSA: máquina lavaloza/Sanitizadora funcionando y en buen estado. La máquina lavavajillas debe tener una temperatura de enjuague final de al menos 180º F (82º C) como se observa en la lectura digital. Si la máquina lavaloza se encuentra inactiva se debe correr 3 veces para evaluar la temperatura de enjuague, tomando la última lectura para penalizar en caso de que no se cumpla. Si la máquina lavaloza se encuentra activa se debe correr 2 veces para evaluar la temperatura de enjuague, tomando la última lectura para penalizar en caso de que no se cumpla. Si la máquina lavaloza no funciona se debe realizar el proceso alterno. Si la máquina lavaloza funciona pero no alcanza la temperatura, se permite uso de sanitización por inmersión de loza recién lavada. Las máquinas lavavajillas desinfectantes químicas deben suministrar 50-100 ppm de cloro durante el ciclo de enjuague final. El lavado manual debe realizarse en el orden y la concentración correctos de la solución desinfectante dentro del rango recomendado por el fabricante. Se penaliza a partir de 1 incumplimiento / ID. 30090", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I022", "question": "Partners sin acceso a baño funcional durante operación", "code": "10.01.07-a. 5 pts", "context": "10.01.07-a. 5.0 pts. FACTOR CRÍTICO ICA Y RSA: los partners deben tener acceso a un baño durante todas las horas de operación comercial. Evaluar que un baño funcional esté disponible para los partners. Se penaliza a partir de 1 incumplimiento / ID. 30105", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I023", "question": "Refrigeración insuficiente para proteger alimentos TCS", "code": "10.01.08-c. 5 pts", "context": "10.01.08-c. 5.0 pts. FACTOR CRÍTICO ICA Y RSA: todas las tiendas deben tener una refrigeración mecánica correcta para alimentos TCS. Se penaliza a partir de 1 incumplimiento / ID. 30109", "points": 5, "icaText": "Resta 5 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I024", "question": "Procedimiento correcto de lavado de manos no seguido", "code": "13.01.03-b. 0 pts", "context": "13.01.03-b. 0.0 pts. FACTOR CRÍTICO RSA: se sigue el correcto procedimiento lavado de manos / ID. 30174", "points": 0, "icaText": "Resta 0 pts.", "semText": "Cuenta como 1 Critico", "category": "Crítico", "semCategory": "Critico", "semCount": true, "section": "Críticos RSA / ICA", "requiresPhoto": false}, {"id": "I025", "question": "Higiene personal, uñas o cabello fuera de estándar", "code": "1.01.01-b. 3 pts", "context": "1.01.01-b. 3.0 pts. MAYOR: los partners que se encuentran en actividades de preparación de alimentos o bebidas tienen manos limpias y uñas limpias y recortadas, sin esmalte ni decoración. No usan uñas postizas. El cabello de los partners debe estar completamente recogido y protegido con red. Se penaliza a partir de 1 incumplimiento / ID. 29769", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I026", "question": "Comer, beber o fumar en áreas no autorizadas", "code": "1.01.02-b. 3 pts", "context": "1.01.02-b. 3.0 pts. MAYOR: comer y beber está permitido sólo en las áreas designadas para los descansos, que pueden incluir la estación de trabajo del gerente o el área designada de descanso separado del almacén de alimentos y áreas de preparación. Fumar/vaping no está permitido en ningún área de la tienda. La cata está permitida. Se penaliza a partir de 1 incumplimiento / ID. 29773", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I027", "question": "Comida partner almacenada incorrectamente cerca de alimentos", "code": "1.01.06-a. 3 pts", "context": "1.01.06-a. 3.0 pts. MAYOR: la comida/bebidas del barista debe ser almacenada debajo y separado de los alimentos o artículos en contacto con los alimentos. Se evalúa la presencia de comida/bebidas de baristas a 12 pulgadas (30.5 cm) de separación arriba de alimentos o artículos en contacto con los alimentos dentro de la instalación (ambos FOH y BOH). La comida/bebidas del barista en el refrigerador debe almacenarse en el nivel más bajo en un contenedor con tapa e identificada como \"Comida barista\", \"Solo comida partner\", \"Comida partner\", \"Comida de empleados\" o similar. Sin presencia de comida y/o bebida en lockers que se encuentre expuesta o pueda derramarse. Se penaliza a partir de 1 incumplimiento / ID. 29784", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I028", "question": "Encargado no demuestra conocimientos de inocuidad alimentaria", "code": "2.00.01-b. 3 pts", "context": "2.00.01-b. 3.0 pts. MAYOR: la persona a cargo del turno es responsable de la seguridad de alimentos durante su turno y se requiere que pueda demostrar el conocimiento en los principios de seguridad de alimentos. Identifique a la persona a cargo y haga las 3 preguntas de demostración del conocimiento. Se penaliza a partir de 1 incumplimiento / ID. 29810", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I029", "question": "Utensilios dañados, contaminados o mal almacenados", "code": "3.01.05-a. 3 pts", "context": "3.01.05-a. 3.0 pts. MAYOR: todos los utensilios para preparación de alimentos deben almacenarse limpios y desinfectados. Solo deben estar presentes utensilios aprobados para contacto con alimentos. Los artículos en contacto con alimentos deben estar libres de daños, astillas, grietas, óxido, rayones excesivos, velcro y adhesivos. Los artículos en contacto con alimentos deben almacenarse en una superficie limpia, a 15 cm (6 pulgadas) o más del piso y protegidos de la contaminación. Los artículos en contacto con alimentos no deben almacenarse en el baño o debajo de las líneas de drenaje/condensado que presenten goteras. Se penaliza a partir de 1 incumplimiento / ID. 29834", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I030", "question": "Producto retirado no identificado o segregado correctamente", "code": "3.01.05-h. 3 pts", "context": "3.01.05-h. 3.0 pts. MAYOR: el producto que ha sido dañado, retirado del mercado o con la orden de dejar de venderse y conservarse, debe separarse y etiquetarse como \"no usar\" o similar. Se penaliza a partir de 1 incumplimiento / ID. 29836", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I031", "question": "Alimentos con polvo, cabello, moho o contaminación visible", "code": "3.02.04-f. 3 pts", "context": "3.02.04-f. 3.0 pts. MAYOR: los productos alimenticios deben estar libres de polvo, cabello, moho y/o cualquier otra fuente de contaminación mayor. Se evalúa que las toronjas no presenten signos de descomposición. Se penaliza a partir de 1 incumplimiento / ID. 29841", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I032", "question": "Producto almacenado sin identificación del contenido", "code": "3.03.01-a. 3 pts", "context": "3.03.01-a. 3.0 pts. MAYOR: el producto TCS retirado de su empaque original etiquetado y colocado en otro recipiente para almacenamiento debe etiquetarse con el nombre del contenido. Se penaliza a partir de 1 incumplimiento / ID. 29849", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I033", "question": "Termómetro ausente, dañado o sin calibración vigente", "code": "4.01.03-c. 3 pts", "context": "4.01.03-c. 3.0 pts. MAYOR: los termómetros de la unidad están limpios, visibles, con pilas, calibrado y en buen estado. Se debe tener al menos 1 termómetro en buen estado en la tienda. Se penaliza a partir de 1 incumplimiento / ID. 2987", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I034", "question": "Depósitos de hielo destapados o sin protección", "code": "5.01.03-b. 3 pts", "context": "5.01.03-b. 3.0 pts. MAYOR: el depósito de hielo o hieleras en caso de no estar en uso o servicio deben estar tapados. Se penaliza si los depósitos de hielo se encuentran destapados sin estar en uso y/o si no se cuenta con un contenedor exclusivo para transportar el hielo. Se penaliza a partir de 1 incumplimiento / ID. 29931", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I035", "question": "Trapos sanitizantes almacenados incorrectamente", "code": "6.01.01-e. 3 pts", "context": "6.01.01-e. 3.0 pts. MAYOR: los trapos de limpieza utilizados para desinfectar las superficies en contacto con los alimentos deben encontrarse sumergidos. Los trapos de limpieza almacenados que son utilizados para desinfectar las superficies en contacto con los alimentos deben protegerse de la contaminación. Se penaliza a partir de 1 incumplimiento / ID. 29959", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I036", "question": "Utensilios con suciedad, incrustaciones o deterioro", "code": "6.02.05-c. 3 pts", "context": "6.02.05-c. 3.0 pts. MAYOR: utensilios de preparación de alimentos y bebidas (tablas de picar, pinzas, cuchillos, jarras de vaporización, etc.), limpios, sin incrustaciones, sin quemaduras, mangos dañados en buen estado. Se penaliza a partir de 1 incumplimiento / ID. 29978", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I037", "question": "Temporizador de cuatro horas ausente o inactivo", "code": "6.02.05-d. 3 pts", "context": "6.02.05-d. 3.0 pts. MAYOR: todos los utensilios en uso deben limpiarse y desinfectarse con una frecuencia que controle el crecimiento microbiano. Esta frecuencia debe ser monitoreada por un temporizador. El temporizador debe estar funcionando y el tiempo debe estar corriendo. Preguntar al PIC por su temporizador de 4 horas para utensilios. Se penaliza a partir de 1 incumplimiento. / ID. 29979", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I038", "question": "Fregaderos utilizados para almacenamiento indebido", "code": "6.02.07-b. 3 pts", "context": "6.02.07-b. 3.0 pts. MAYOR: los compartimentos del fregadero o las tablas de drenaje no deben usarse para almacenar productos alimenticios o artículos de un solo uso en contacto con alimentos. Se debe usar detergente para todas las actividades de lavado. Los químicos de la máquina lavaloza se encuentran conectados correctamente con mangueras sumergidas y químico suficiente. Se penaliza a partir de 1 incumplimiento / ID. 29984", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I039", "question": "Químicos mal almacenados o sin identificación adecuada", "code": "7.01.02-b. 3 pts", "context": "7.01.02-b. 3.0 pts. MAYOR: Todos los productos químicos deben almacenarse de manera segura en sus envases originales con la etiqueta del fabricante y usarse según las instrucciones. Productos químicos en recipientes exclusivos, etiquetados, cerrados, sin presencia de fugas y con caducidad vigente. No se almacenan productos químicos en recipientes de comida o recipientes de comida de un solo uso. Se penaliza a partir de 3 incumplimientos. La solución sanitizante para desinfección de superficies debe encontrarse dentro del rango permitido (200-400 ppm). Se penaliza a partir de 1 incumplimiento / ID. 30023", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I040", "question": "Tiras reactivas vencidas, dañadas o sin guía color", "code": "7.01.02-c. 3 pts", "context": "7.01.02-c. 3.0 pts. MAYOR: la tienda cuenta con tiras reactivas para medición de concentración de desinfectante con caducidad vigente y en buen estado (con guía de color y no mojadas). Se penaliza a partir de 1 incumplimiento / ID. 30024", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I041", "question": "Diez o más moscas de fruta presentes en tienda", "code": "8.01.01-g. 3 pts", "context": "8.01.01-g. 3.0 pts. MAYOR: la tienda está libre de moscas de la fruta en una o varias áreas de la tienda. Se penaliza a partir de 10 organismos encontrados. / ID. 30051", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I042", "question": "Diez o más moscas domésticas presentes en tienda", "code": "8.01.01-h. 3 pts", "context": "8.01.01-h. 3.0 pts. MAYOR: la tienda está libre de moscas domésticas en una o varias áreas de la tienda. Se penaliza a partir de 10 organismos encontrados. / ID. 30052", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I043", "question": "Hormigas presentes en alimentos o superficies contacto", "code": "8.01.01-i. 3 pts", "context": "8.01.01-i. 3.0 pts. MAYOR: la tienda está libre de hormigas en contacto con alimentos o superficies de contacto con alimentos. Se penaliza a partir de 1 incumplimiento / ID. 30053", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I044", "question": "Dispositivos plagas generan riesgo de contaminación", "code": "8.01.03-a. 3 pts", "context": "8.01.03-a. 3.0 pts. MAYOR: todos los dispositivos de control de plagas, incluidas las estaciones de cebo y las luces atrayentes de insectos, deben colocarse en áreas donde no representen un riesgo de contaminación para los alimentos, artículos de un solo uso o equipos de alimentos/superficie de contacto. Se penaliza a partir de 1 incumplimiento / ID. 30063", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I045", "question": "Registros obligatorios incompletos, adelantados o con espacios vacíos", "code": "9.01.04-a. 3 pts", "context": "9.01.04-a. 3.0 pts. MAYOR: se cuenta con registros diarios de (se penaliza a partir de 3 espacios vacíos y/o adelantados): / ID. 30076•\tCalibración de termómetro•\tTemperatura interna de alimentos refrigerados y congelados dentro de equipos (semana en curso y semana anterior)•\tTemperatura de todas las entregas refrigeradas o congeladas (semana en curso y semana anterior)", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I046", "question": "Coladeras dañadas, estancadas o con malos olores", "code": "10.01.06-a. 3 pts", "context": "10.01.06-a. 3.0 pts. MAYOR: el drenaje cuenta con coladeras fijas y/o canaletas con rejillas, sin malos olores, sin estancamiento y que no se encuentre rotas. Se penaliza a partir de 1 incumplimiento / ID. 30101", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I047", "question": "Equipos de refrigeración operan fuera del rango máximo permitido", "code": "10.01.08-a. 3 pts", "context": "10.01.08-a. 3.0 pts. MAYOR: los equipos de refrigeración se mantienen a una temperatura promedio máxima de 5°C (41°F). Se debe medir temperatura con termómetro digital solo si el equipo no cuenta con un instrumento de medición o la temperatura del termómetro colgante se encuentra fuera de rango. Se debe medir la temperatura colocando el termómetro previamente calibrado dentro del equipo cerrado durante 3 minutos mínimo. Se penaliza a partir de 1 incumplimiento / ID. 30107", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I048", "question": "Contenedores o máquinas de hielo dañados o sin funcionamiento", "code": "10.01.10-b. 3 pts", "context": "10.01.10-b. 3.0 pts. MAYOR: los contenedores de hielo (nevera/ hielera/ ice bin) y las máquinas de hielo deben estar en buen estado y funcionando correctamente. Se penaliza a partir de 1 incumplimiento / ID. 30116", "points": 3, "icaText": "Resta 3 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / ICA", "requiresPhoto": false}, {"id": "I049", "question": "Entradas o estructuras permiten acceso de plagas", "code": "13.01.01-b. 0 pts", "context": "13.01.01-b. 0.0 pts. MAYOR: la tienda debe estar libre de entradas de plagas. Las entradas de la tienda deben estar estructuralmente intactas y resistentes a las plagas. Paredes y techos dentro de la tienda deben estar en buen estado y libre de agujeros. Se penaliza a partir de 3 incumplimientos / ID. 30167", "points": 0, "icaText": "Resta 0 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / 0 pts ICA", "requiresPhoto": false}, {"id": "I050", "question": "Lavamanos inaccesibles, desabastecidos o mal utilizados", "code": "13.01.03-a. 0 pts", "context": "13.01.03-a. 0.0 pts. MAYOR: Fregaderos para el lavado de manos accesibles, abastecidos y usados correctamente / ID. 30173", "points": 0, "icaText": "Resta 0 pts.", "semText": "Cuenta como 1 Mayor", "category": "Mayor", "semCategory": "Mayor", "semCount": true, "section": "Mayores RSA / 0 pts ICA", "requiresPhoto": false}, {"id": "I051", "question": "Uniforme, mandil o presentación personal fuera de estándar", "code": "1.01.01-a. 1 pt", "context": "1.01.01-a. 1.0 pts. MENOR: los delantales de los baristas deben estar visiblemente limpios durante el turno. Los delantales deben retirarse antes de usar el baño, salir a descanso, limpiar los baños o sacar la basura. No se penaliza delantal con marcas de pluma o marcador. Los partners tienen una apariencia limpia y pulcra, no usan barba y/o bigote, ni pestañas postizas, visten uniforme completo, con calzado cerrado y limpio. Se penaliza a partir de 1 incumplimiento / ID. 29768", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I052", "question": "Objetos personales almacenados fuera de áreas autorizadas", "code": "1.01.04-b. 1 pt", "context": "1.01.04-b. 1.0 pts. MENOR: cada tienda debe tener un área designada para el almacenamiento de artículos personales de los baristas, separado de preparación de alimentos y almacenamiento. No deben estar objetos personales fuera de esta área. / ID. 29775", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I053", "question": "Capacitación NOM251 o Factores Críticos no vigente", "code": "2.00.01-a. 1 pt", "context": "2.00.01-a. 1.0 pts. MENOR: el 100% de la plantilla debe cursar el e-learning NOM 251 y Factores Críticos al menos una vez al año. No se considera a partners con menos de 30 días de ingreso. / ID. 29809", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I054", "question": "Producto no TCS sin fecha vigente o identificación", "code": "3.02.05-a. 1 pt", "context": "3.02.05-a. 1.0 pts. MENOR: los productos alimenticios no TCS deben tener fecha de caducidad o vida secundaria legible y vigente. Producto no TCS fuera de empaque original debe etiquetarse con nombre del contenido. / ID. 29843", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I055", "question": "Producto congelado no permanece completamente sólido al tacto", "code": "4.01.01-b. 1 pt", "context": "4.01.01-b. 1.0 pts. MENOR: todos los alimentos que se encuentran en el congelador deben estar congelados, sólidos al tacto. / ID. 29873", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I056", "question": "Equipo sin termómetro funcional para monitoreo de temperatura", "code": "4.01.02-a. 1 pt", "context": "4.01.02-a. 1.0 pts. MENOR: los equipos de refrigeración/congelación están provistos de termómetros o dispositivos de registro funcionando y accesibles. / ID. 29876", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I057", "question": "Almacenamiento obstruye circulación adecuada de aire", "code": "4.01.04-a. 1 pt", "context": "4.01.04-a. 1.0 pts. MENOR: se permite circulación de aire entre materias primas durante almacenamiento, sin obstrucción de salidas de aire. / ID. 29880", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I058", "question": "Uso de fibras no autorizadas en áreas operativas", "code": "6.01.01-a. 1 pt", "context": "6.01.01-a. 1.0 pts. MENOR: solo se usan fibras autorizadas. No se permite uso de fibras de metal y/o piedra pómez. / ID. 29956", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I059", "question": "Herramientas de limpieza almacenadas incorrectamente o sucias", "code": "6.01.01-h. 1 pt", "context": "6.01.01-h. 1.0 pts. MENOR: herramientas para limpieza de pisos deben almacenarse limpias; sin cubetas sucias o trapeadores almacenados con agua. / ID. 29962", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I060", "question": "Gabinetes o encimeras con suciedad visible", "code": "6.02.01-d. 1 pt", "context": "6.02.01-d. 1.0 pts. MENOR: gabinetes / encimeras mantenidas limpias. / ID. 29968", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I061", "question": "Equipos operativos presentan acumulación visible de suciedad", "code": "6.02.03-a. 1 pt", "context": "6.02.03-a. 1.0 pts. MENOR: todo el equipo debe mantenerse visiblemente limpio y libre de acumulaciones. / ID. 29973", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I062", "question": "Refrigeradores o congeladores con suciedad visible", "code": "6.02.04-a. 1 pt", "context": "6.02.04-a. 1.0 pts. MENOR: todas las unidades de refrigeración y congelación deben mantenerse visiblemente limpias. / ID. 29975", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I063", "question": "Utensilios húmedos almacenados apilados o anidados", "code": "6.02.05-b. 1 pt", "context": "6.02.05-b. 1.0 pts. MENOR: artículos en contacto con alimentos deben secarse al aire y no almacenarse apilados/anidados cuando están mojados. / ID. 29977", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I064", "question": "Sanitizadora o fregaderos con suciedad acumulada", "code": "6.02.06-a. 1 pt", "context": "6.02.06-a. 1.0 pts. MENOR: sanitizadora, fregaderos e instalaciones deben estar visiblemente limpios y libres de acumulaciones. / ID. 2998", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I065", "question": "Baños sucios, con mal olor o deficiencias visibles", "code": "6.03.04-a. 1 pt", "context": "6.03.04-a. 1.0 pts. MENOR: baños visiblemente limpios, en buen estado, sin mal olor, con papel disponible y mueble de pañales limpio. / ID. 30000", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I066", "question": "Exceso de hormigas presentes en cualquier área", "code": "8.01.01-j. 1 pt", "context": "8.01.01-j. 1.0 pts. MENOR: la tienda está libre de hormigas en cualquier área; se penaliza a partir de 10 organismos. / ID. 30054", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I067", "question": "Carpeta control de plagas incompleta o desactualizada", "code": "8.01.02-a. 1 pt", "context": "8.01.02-a. 1.0 pts. MENOR: el establecimiento tiene servicio profesional de control de plagas y carpeta con licencia, hojas de seguridad, programa de visitas, registros e informes vigentes. / ID. 30056", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I068", "question": "Aviso de funcionamiento no disponible durante auditoría", "code": "9.01.01-a. 1 pt", "context": "9.01.01-a. 1.0 pts. MENOR: el establecimiento cuenta con aviso de funcionamiento impreso; se penaliza si no se muestra durante la auditoría. / ID. 30065", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I069", "question": "Señalamientos de inocuidad faltantes o incompletos", "code": "9.01.01-c. 1 pt", "context": "9.01.01-c. 1.0 pts. MENOR: ayudas visuales de lavado de manos, aviso de alérgenos, vitrina de exhibición y etiquetas de lavar/enjuagar/sanitizar deben estar presentes. / ID. 30067", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I070", "question": "Lavabos o accesorios de plomería dañados", "code": "10.01.02-a. 1 pt", "context": "10.01.02-a. 1.0 pts. MENOR: accesorios de plomería en FOH, BOH y baños deben estar en buenas condiciones. / ID. 30089", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I071", "question": "Iluminación sucia, dañada o sin protección requerida", "code": "10.01.03-a. 1 pt", "context": "10.01.03-a. 1.0 pts. MENOR: iluminación y pantallas deben mantenerse limpias, en buen estado y protegidas cuando aplique. / ID. 30092", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I072", "question": "Empaques refrigeración dañados o sin sellado adecuado", "code": "10.01.09-b. 1 pt", "context": "10.01.09-b. 1.0 pts. MENOR: empaques en refrigeración/congelación deben estar presentes y en buenas condiciones, sin grietas mayores a 1 pulgada. / ID. 30112", "points": 1, "icaText": "Resta 1 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I073", "question": "Pisos, techos o paredes con suciedad acumulada", "code": "13.01.01-a. 0 pts", "context": "13.01.01-a. 0.0 pts. MENOR: pisos, techos, conductos de ventilación y paredes deben estar limpios, libres de incrustaciones y en buen estado. / ID. 30166", "points": 0, "icaText": "Resta 0 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I074", "question": "Encimeras, gabinetes o basura en condiciones deficientes", "code": "13.01.01-e. 0 pts", "context": "13.01.01-e. 0.0 pts. MENOR: encimeras selladas, gabinetes sin humedad/daño/moho, botes de basura no desbordados y bolsas llenas en contenedores cubiertos. / ID. 30168", "points": 0, "icaText": "Resta 0 pts.", "semText": "Cuenta como 1 Menor", "category": "Menor", "semCategory": "Menor", "semCount": true, "section": "Menores RSA / ICA", "requiresPhoto": false}, {"id": "I075", "question": "3 o más alimentos TCS caducados disponibles para uso o venta", "code": "3.02.05-c. 15 pts", "context": "3.02.05-c. 15.0 pts. RIESGO INMINENTE: 3 o más alimentos TCS diferentes caducados. Desechar en presencia del auditor y tomar evidencia. / ID. 29845", "points": 15, "icaText": "Resta 15 pts.", "semText": "No Cuenta En Semaforo", "category": "Riesgo Inminente", "semCategory": "", "semCount": false, "section": "Riesgo Inminente / ICA", "requiresPhoto": false}, {"id": "I076", "question": "3 productos TCS refrigerados o congelados arriba de 12°C", "code": "4.01.01-c. 15 pts", "context": "4.01.01-c. 15.0 pts. RIESGO INMINENTE: 3 productos refrigerados y/o congelados TCS con temperatura mayor a 12°C (53.6°F). / ID. 29874", "points": 15, "icaText": "Resta 15 pts.", "semText": "No Cuenta En Semaforo", "category": "Riesgo Inminente", "semCategory": "", "semCount": false, "section": "Riesgo Inminente / ICA", "requiresPhoto": false}, {"id": "I077", "question": "Falta agua suficiente para operación, sanitización o sanitarios funcionales", "code": "5.01.05-a. 15 pts", "context": "5.01.05-a. 15.0 pts. RIESGO INMINENTE ICA Y RSA: carencia de agua para actividades de operación, sanitización o sanitarios; si no se restablece después de 30 min. / ID. 29933", "points": 15, "icaText": "Resta 15 pts.", "semText": "No Cuenta En Semaforo", "category": "Riesgo Inminente", "semCategory": "", "semCount": false, "section": "Riesgo Inminente / ICA", "requiresPhoto": false}, {"id": "I078", "question": "Infestación severa de plagas visible dentro de instalaciones", "code": "8.01.01-b. 15 pts", "context": "8.01.01-b. 15.0 pts. RIESGO INMINENTE: infestación severa de plaga en las instalaciones de la tienda. / ID. 30046", "points": 15, "icaText": "Resta 15 pts.", "semText": "No Cuenta En Semaforo", "category": "Riesgo Inminente", "semCategory": "", "semCount": false, "section": "Riesgo Inminente / ICA", "requiresPhoto": false}, {"id": "I079", "question": "Reflujo de coladeras en preparación o sanitarios con riesgo sanitario", "code": "10.01.06-c. 15 pts", "context": "10.01.06-c. 15.0 pts. RIESGO INMINENTE ICA Y RSA: reflujo de agua de coladeras en áreas de preparación o sanitarios de clientes. / ID. 30103", "points": 15, "icaText": "Resta 15 pts.", "semText": "No Cuenta En Semaforo", "category": "Riesgo Inminente", "semCategory": "", "semCount": false, "section": "Riesgo Inminente / ICA", "requiresPhoto": false}, {"id": "I080", "question": "Evento de riesgo biológico presente; suspender evaluación", "code": "13.01.02-a. 0 pts", "context": "13.01.02-a. 0.0 pts. FACTOR CRÍTICO RSA: ningún evento de riesgo biológico presente. Suspender evaluación. / ID. 30170", "points": 15, "icaText": "Resta 15 pts.", "semText": "No Cuenta En Semaforo", "category": "Riesgo Inminente", "semCategory": "", "semCount": false, "section": "Riesgo Inminente / ICA", "requiresPhoto": false}, {"id": "I081", "question": "Incendio, inundación o desastre natural presente", "code": "13.01.02-d. 0 pts", "context": "13.01.02-d. 0.0 pts. FACTOR CRÍTICO RSA: sin incendio, inundación u otro desastre natural. Suspender evaluación. / ID. 30171", "points": 15, "icaText": "Resta 15 pts.", "semText": "No Cuenta En Semaforo", "category": "Riesgo Inminente", "semCategory": "", "semCount": false, "section": "Riesgo Inminente / ICA", "requiresPhoto": false}, {"id": "I082", "question": "Paredes o techos con suciedad incrustada acumulada", "code": "6.02.01-a. 3 pts", "context": "6.02.01-a. 3.0 pts. MAYOR ICA: paredes y techos libres de suciedad incrustada o acumulada. Se penaliza a partir de 3 incumplimientos. / ID. 29966", "points": 3, "icaText": "Resta 3 pts.", "semText": "No Cuenta En Semaforo", "category": "Mayor ICA", "semCategory": "", "semCount": false, "section": "Mayores ICA / No RSA", "requiresPhoto": false}, {"id": "I083", "question": "Pisos con suciedad incrustada en áreas operativas", "code": "6.02.01-e. 3 pts", "context": "6.02.01-e. 3.0 pts. MAYOR ICA: pisos de cualquier área libres de suciedad incrustada o acumulada. / ID. 29969", "points": 3, "icaText": "Resta 3 pts.", "semText": "No Cuenta En Semaforo", "category": "Mayor ICA", "semCategory": "", "semCount": false, "section": "Mayores ICA / No RSA", "requiresPhoto": false}, {"id": "I084", "question": "Sin evidencia de sanitización profunda de fábrica de hielo", "code": "10.01.05-d. 3 pts", "context": "10.01.05-d. 3.0 pts. MAYOR ICA: comprobante semestral de sanitización profunda a fábrica de hielo con proveedor externo y reporte fotográfico. / ID. 30098", "points": 3, "icaText": "Resta 3 pts.", "semText": "No Cuenta En Semaforo", "category": "Mayor ICA", "semCategory": "", "semCount": false, "section": "Mayores ICA / No RSA", "requiresPhoto": false}, {"id": "I085", "question": "Sistema de purificación presenta fallas operativas", "code": "10.01.10-a. 3 pts", "context": "10.01.10-a. 3.0 pts. MAYOR ICA: sistema de purificación de agua funcionando correctamente; lámpara UV sin fallas y tanque de salmuera con sal. / ID. 30115", "points": 3, "icaText": "Resta 3 pts.", "semText": "No Cuenta En Semaforo", "category": "Mayor ICA", "semCategory": "", "semCount": false, "section": "Mayores ICA / No RSA", "requiresPhoto": false}, {"id": "I086", "question": "Uso de celular o joyería en preparación de alimentos", "code": "1.01.01-d. 1 pt", "context": "1.01.01-d. 1.0 pts. Los partners que se encuentran en el área de preparación de alimentos y/o bebidas, mientras realizan la actividad, no utilizan celulares personales y no portan joyería en ninguna parte del cuerpo que represente un riesgo de contaminación para el alimento (aun cuando se cubran con cinta). Se penaliza a partir de 1 incumplimiento / ID. 29770", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I087", "question": "Personal mantenimiento sin red para cabello requerida", "code": "1.01.02-c. 1 pt", "context": "1.01.02-c. 1.0 pts. Se solicita el uso de red para personal de mantenimiento en las áreas de preparación de alimentos / ID. 29807", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I088", "question": "Estación de lavado de manos incompleta o inaccesible", "code": "1.01.04-c. 1 pt", "context": "1.01.04-c. 1.0 pts. Se cuenta con al menos 1 estación exclusiva de lavado y sanitización de manos. La estación es de fácil acceso, tarja sin evidencia de ser usada con otro fin. El lavabo debe tener sistema para que no se toquen las perillas, en caso de que no exista papel para cerrar las perillas. Se penaliza con 1 incumplimiento. Se encuentra provista de: / ID. 29776o\tAbasto de jabón. El dispensador debe funcionaro\tAbasto de toallas desechables o secador de aire para manos. Los secadores de manos y dispensadores de toallas deben de funcionaro\tCepillo de uñas limpio y en buenas condiciones (no desgastado o con incrustaciones), sumergido en solución sanitizante a concentración de 200 - 400 ppm. El cepillo debe ser el autorizado para tal fin (de cerdas suaves)", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I089", "question": "Área de basura sucia, desordenada o con escurrimientos", "code": "1.03.01-a. 1 pt", "context": "1.03.01-a. 1.0 pts. Contenedores de basura y área general de basura limpios y ordenados. No hay exceso de escurrimiento o suciedad incrustada en piso y paredes. No hay bolsas de basura directamente en el piso. No hay basura expuesta. Los cartones de cajas deben estar acomodados para su desecho. Se penaliza a partir de 1 incumplimiento / ID. 29786", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I090", "question": "Botes de basura sin bolsa o sobrecapacidad", "code": "1.03.01-c. 1 pt", "context": "1.03.01-c. 1.0 pts. Botes de basura en cualquier área de la tienda deben tener bolsa de plástico. No se tienen botes con basura que exceda su capacidad. Se penaliza a partir de 1 incumplimiento en cualquier área de la tienda. / ID. 29787", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I091", "question": "Fragmentos de vidrio o cerámica en áreas operativas", "code": "1.03.03-a. 1 pt", "context": "1.03.03-a. 1.0 pts. No se deben encontrar fragmentos de vidrio o cerámica en área de preparación de alimentos y/o bebidas y/o en área de almacenamiento. Se penaliza a partir de 1 incumplimiento / ID. 29789", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I092", "question": "Alimentos refrigerados sin manejo prioritario adecuado", "code": "3.01.01-b. 1 pt", "context": "3.01.01-b. 1.0 pts. Los alimentos de origen refrigerado son manipulados y almacenados como prioridad. No se observan olvidos o alimentos sin actividad evidente de acomodo que los ponga en riesgo. / ID. 29830", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I093", "question": "No se aplica procedimiento FEFO correctamente", "code": "3.01.04-a. 1 pt", "context": "3.01.04-a. 1.0 pts. Se aplica procedimiento FEFO en todos los almacenes (lo más próximo a expirar es lo que primero se usa). Se penaliza con 2 o más incumplimientos en productos diferentes. / ID. 29832", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I094", "question": "Kit de medición de cloro incompleto o vencido", "code": "5.01.01-a. 1 pt", "context": "5.01.01-a. 1.0 pts. Se cuenta con el kit de medición de cloro residual con pastillas de caducidad vigente y se sabe utilizar. Solicitar que se realice la medición. Se penaliza a partir de 1 incumplimiento en el lineamiento / ID. 29923", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I095", "question": "Cloro residual fuera del rango establecido", "code": "5.01.01-b. 0 pts", "context": "5.01.01-b. 0.0 pts. El rango de cloro residual en agua de tarja doble es 0.2 a 1.5 ppm / ID. 29924", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I096", "question": "Sistema de purificación sucio o desordenado", "code": "5.01.02-a. 1 pt", "context": "5.01.02-a. 1.0 pts. El área del sistema de purificación de agua se encuentra limpia y ordenada (tanques y tuberías limpias en el exterior). Se penaliza si se observa que se almacenan productos arriba de los filtros o tanques, exceso de suciedad en la superficie de filtros, tuberías y tanques, o presencia de basura en el área del sistema. Se penaliza a partir de 1 incumplimiento / ID. 29926", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I097", "question": "Herramientas sanitarios mezcladas con áreas proceso", "code": "6.01.01-b. 1 pt", "context": "6.01.01-b. 1.0 pts. Las herramientas de limpieza para sanitarios deben de estar almacenadas en un lugar separado de las herramientas de limpieza para áreas de proceso, se evalúa que no se mezclen las herramientas entre sí. Se permite almacenar en baño de partner las herramientas de limpieza del baño. Se penaliza a partir de 1 incumplimiento / ID. 29957", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I098", "question": "Herramientas limpieza usadas fuera código de color", "code": "6.01.01-f. 1 pt", "context": "6.01.01-f. 1.0 pts. Herramientas de limpieza como contenedores, cubetas, aspersor, trapeador, cepillos y escobas son utilizados de acuerdo con el código de color establecido. Se penaliza a partir de 1 incumplimiento / ID. 29960", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I099", "question": "Faltan ayudas visuales de códigos de color", "code": "6.01.01-g. 1 pt", "context": "6.01.01-g. 1.0 pts. Se cuentan con ayudas visuales a la vista de los partners, para informar al personal sobre los códigos de color establecidos para utensilios y para herramientas de limpieza. Se penaliza a partir de 1 incumplimiento / ID. 29961", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I100", "question": "Plan maestro de limpieza inexistente o incompleto", "code": "6.01.02-a. 1 pt", "context": "6.01.02-a. 1.0 pts. Se cuenta con un plan maestro de limpieza que indique equipo o área, frecuencia y responsable. Se penaliza si no se cuenta con plan o no cumple con los requisitos indicados / ID. 29964", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I101", "question": "Equipos fuera de uso con polvo o suciedad", "code": "6.02.02-b. 1 pt", "context": "6.02.02-b. 1.0 pts. Mantener limpios y sin acumulación de polvo o suciedad incrustada aquellos equipos que no funcionen, preferentemente retirados del lugar de trabajo. Se penaliza a partir de 1 incumplimiento / ID. 29971", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I102", "question": "Herramientas de piso lavadas en tarjas incorrectas", "code": "6.02.06-d. 1 pt", "context": "6.02.06-d. 1.0 pts. Las herramientas de limpieza de pisos se lavan en las áreas asignadas para tal fin (prohibido lavarlos en tarjas de lavado de utensilios de preparación de alimentos). Se penaliza a partir de 1 incumplimiento / ID. 29982", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I103", "question": "Oficina con acumulación de basura o polvo", "code": "6.02.08-a. 1 pt", "context": "6.02.08-a. 1.0 pts. El área de oficina se encuentra limpia. Se penaliza acumulación de basura, polvo en exceso sobre muebles. Se permite bebida dentro de un contenedor o botella. Se penaliza a partir de 1 incumplimiento / ID. 29987", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I104", "question": "Equipos informáticos con manchas o exceso de polvo", "code": "6.02.08-b. 1 pt", "context": "6.02.08-b. 1.0 pts. Equipos Informáticos limpios: pantallas táctiles / KDS / impresoras/ televisiones / rack de sistemas. Se penaliza a partir de 1 equipo con manchas, derrames y/o exceso de polvo. / ID. 29988", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I105", "question": "Estructuras lobby sucias afectan imagen de tienda", "code": "6.03.01-a. 1 pt", "context": "6.03.01-a. 1.0 pts. Estructuras en general del lobby se encuentran sucias y afectan la imagen de la tienda. Se penaliza a partir de 3 incumplimientos / ID. 29990", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I106", "question": "Mobiliario lobby sucio afecta imagen general", "code": "6.03.01-b. 1 pt", "context": "6.03.01-b. 1.0 pts. Mobiliarios en general y estanterías del lobby se encuentran sucias y afectan la imagen de la tienda. Se penaliza a partir de 3 incumplimientos / ID. 29991", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I107", "question": "Botes lobby sin bolsa, sucios o con exceso basura", "code": "6.03.01-c. 1 pt", "context": "6.03.01-c. 1.0 pts. Los botes de basura del área de lobby se encuentran con bolsa, sin suciedad incrustada y en buen estado, sin que la basura exceda la capacidad de los contenedores y/o sin mal olor. Se penaliza a partir de 1 incumplimiento / ID. 29992", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I108", "question": "Mesas y sillas sin limpieza posterior al servicio", "code": "6.03.01-d. 1 pt", "context": "6.03.01-d. 1.0 pts. Después de cada servicio, se debe limpiar las mesas, limpiar sillas y sillones. Observar durante el recorrido, en un periodo no mayor a 10 min después de terminar el servicio. Se penaliza a partir de 1 incumplimiento / ID. 29993", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I109", "question": "Jardineras o jardines deteriorados afectan imagen tienda", "code": "6.03.01-e. 1 pt", "context": "6.03.01-e. 1.0 pts. Jardineras y/o jardines en buen estado. Se evalúa que no existan jardineras rotas, agrietadas, despintadas, exceso de maleza o pasto crecido, plantas artificiales no integras, jardines con rejas o protecciones oxidadas, etc., que de mal aspecto y afecte a la imagen de la tienda. Se penaliza más del 50% de jardineras en mal estado. / ID. 29994", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I110", "question": "Loza, cubiertos o utensilios sucios o dañados", "code": "6.03.02-b. 1 pt", "context": "6.03.02-b. 1.0 pts. Los utensilios de servicio, loza y cubiertos se encuentran limpios y en buen estado. Se penaliza con 3 o más que no cumplan completamente / ID. 29996", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I111", "question": "Vitrinas sucias o productos sin identificación y precio", "code": "6.03.03-a. 1 pt", "context": "6.03.03-a. 1.0 pts. Los productos exhibidos en vitrinas están en buen estado (alimentos y/o merch), tienen etiqueta de identificación y precio. Las vitrinas se encuentran limpias. Se penaliza a partir de 1 incumplimiento / ID. 29998", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I112", "question": "Baño clientes sin insumos, limpieza o funcionamiento adecuado", "code": "6.03.04-b. 1 pt", "context": "6.03.04-b. 1.0 pts. El sanitario de clientes debe contar con (se penaliza a partir de 1 incumplimiento): / ID. 30001o\tAbasto de jabón líquido/espuma y toallas desechables o secador de aire para manos. Los dispensadores de papel, toallas y jaboneras deben funcionaro\tAgua corriente disponibleo\tBote de basura provisto de una bolsa de plástico y tapa oscilante, de pedal. Sin exceso de basura/suciedad o bote lleno", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I113", "question": "Químicos no autorizados sin ficha técnica o seguridad", "code": "7.01.01-a. 1 pt", "context": "7.01.01-a. 1.0 pts. El establecimiento sólo usa productos químicos autorizados. En caso de encontrar productos químicos no aprobados deben contar con ficha técnica y hoja de seguridad, se penaliza si dichos productos no cuentan con su documentación. Se penaliza a partir de 1 incumplimiento / ID. 3002", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I114", "question": "Envases químicos reutilizados o evidencia de adulteración", "code": "7.01.02-d. 1 pt", "context": "7.01.02-d. 1.0 pts. Los recipientes y envases vacíos que contuvieron químicos u otro producto ajeno, no son reutilizados. No se observa evidencia de producto químico diluido o adulterado. Se penaliza a partir de 1 incumplimiento / ID. 30025", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I115", "question": "Hojas seguridad o fichas técnicas no disponibles", "code": "7.01.03-a. 1 pt", "context": "7.01.03-a. 1.0 pts. Se debe contar con hojas de seguridad y fichas técnicas de todos los productos químicos y ser de fácil acceso para los partners. Se evalúa solicitando 2 hojas de seguridad y 2 fichas técnicas de químicos de limpieza aleatoriamente al encargado de recibir la auditoría, a partir de 1 incumplimiento se penaliza. / ID. 30027", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I116", "question": "Señalamientos No Fumar faltantes, dañados o incompletos", "code": "9.01.01-b. 1 pt", "context": "9.01.01-b. 1.0 pts. La unidad cuenta con señalamientos de \"\"No Fumar\"\" vigentes a la vista del CLIENTE (al menos 3); es obligatorio tener en la entrada (s) y terrazas. Si la unidad es Food Court es obligatorio tener las ayudas visuales en el mostrador. Las ayudas visuales deben de tener visibles los números de contacto para denuncias a COFEPRIS y estar en buen estado. Se penaliza si la unidad no tiene al menos 3 ayudas visuales y estas no están en buen estado. / ID. 30066", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I117", "question": "Autoevaluación mensual ICA WEB no finalizada", "code": "9.01.02-a. 1 pt", "context": "9.01.02-a. 1.0 pts. Se cuenta con registro de autoevaluación del establecimiento sobre los temas de calidad e inocuidad con frecuencia mensual. Se evalúa mes en curso (a partir del día 16) o mes anterior. Se penaliza en caso de no mostrar la autoevaluación finalizada en ICA WEB / ID. 30069", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I118", "question": "Acciones correctivas anteriores sin concluir al 100%", "code": "9.01.02-b. 1 pt", "context": "9.01.02-b. 1.0 pts. Se cuentan con el registro de las acciones preventivas y correctivas de la auditoría anterior en ICA WEB. Se penaliza, si no está 100% concluido. Se revisan 5 desviaciones y se evalúa la congruencia de las mismas. / ID. 30070", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I119", "question": "Registros cloro o sanitizante presentan espacios vacíos", "code": "9.01.03-a. 1 pt", "context": "9.01.03-a. 1.0 pts. Se cuenta con registros diarios de (se penaliza a partir de 3 espacios vacíos): / ID. 30072•\tMonitoreo del cloro residual libre•\tValidación de la concentración del químico sanitizante de superficies", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I120", "question": "Registro plan maestro limpieza incompleto", "code": "9.01.05-a. 1 pt", "context": "9.01.05-a. 1.0 pts. Registro del cumplimiento al plan maestro de limpieza. Se penaliza a partir de 3 espacios vacíos / ID. 30081", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I121", "question": "Grietas o faltantes permiten anidación de plagas", "code": "10.01.01-a. 1 pt", "context": "10.01.01-a. 1.0 pts. Sin grietas, hendiduras o faltantes de zoclos, azulejos o losetas en paredes y pisos en toda la instalación de la cocina, almacenes de secos, sanitarios de partner y donde pueda existir anidación de plaga. Se penaliza a partir de 3 incumplimientos / ID. 30083", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I122", "question": "Pintura desprendida u óxido cerca de alimentos", "code": "10.01.01-b. 1 pt", "context": "10.01.01-b. 1.0 pts. Sin pintura desprendida con riesgo de caer en algún alimento. Sin presencia de óxido en anaqueles y/o paredes en el área de almacenamiento de alimentos secos y/o en área de preparación de alimentos. Se penaliza a partir de 2 incumplimientos / ID. 30084", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I123", "question": "Madera deteriorada representa riesgo de plagas", "code": "10.01.01-c. 1 pt", "context": "10.01.01-c. 1.0 pts. Materiales de madera o aglomerados de madera sin indicios de desintegración, putrefacción y/o con orificios que sea un riesgo de atracción y anidación de plagas en área de preparación de alimentos o bebidas (barra). Se penaliza a partir de 1 incumplimiento / ID. 30085", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I124", "question": "Puertas proveedores sin sellado adecuado contra plagas", "code": "10.01.01-d. 1 pt", "context": "10.01.01-d. 1.0 pts. Las puertas de entrada de proveedores están provistas de bota aguas y/o cubre polvo que evitan la entrada de lluvia y fauna nociva. Deben estar correctamente colocadas, funcionales y no deben permitir un claro de luz entre la puerta y el piso. El marco de la puerta debe permitir el correcto sellado y no debe permitir claros de luz. Se penaliza a partir de 1 incumplimiento / ID. 30086", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I125", "question": "Plafones faltantes sobre áreas con alimento expuesto", "code": "10.01.01-f. 1 pt", "context": "10.01.01-f. 1.0 pts. Plafones están completos sobre áreas de preparación con alimento expuesto. Se penaliza con 1 plafón faltante. / ID. 30087", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I126", "question": "Sin comprobante vigente limpieza de cisternas o tinacos", "code": "10.01.05-e. 1 pt", "context": "10.01.05-e. 1.0 pts. Limpieza y sanitización de cisternas y tinacos donde se almacene el agua. Se evalúa el último reporte de servicio que no rebase un año de vigencia. Se penaliza si no se muestra el comprobante / ID. 30099", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I127", "question": "Trampa de grasa con desborde o mal olor", "code": "10.01.06-b. 1 pt", "context": "10.01.06-b. 1.0 pts. Las trampas de grasa no presentan desborde u olor desagradable. Se penaliza a partir de 1 incumplimiento / ID. 30102", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I128", "question": "Congeladores fuera de temperatura objetivo establecida", "code": "10.01.08-b. 1 pt", "context": "10.01.08-b. 1.0 pts. Los equipos de congelación se mantienen a una temperatura promedio de -15°C (5°F) o inferior. Se debe medir temperatura con termómetro digital solo si el equipo no cuenta con un instrumento de medición para corroborar la desviación. Se debe medir la temperatura colocando el termómetro previamente calibrado dentro del equipo cerrado durante 3 minutos mínimo. Se penaliza a partir de 1 incumplimiento / ID. 30108", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I129", "question": "Exceso de condensación, escarcha o escurrimientos internos", "code": "10.01.09-a. 1 pt", "context": "10.01.09-a. 1.0 pts. El interior del equipo, sin exceso de condensación o escarcha que provenga del difusor, o escurrimientos del difusor. Se penaliza a partir de 1 incumplimiento / ID. 30111", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I130", "question": "Puertas, anaqueles o componentes dañados u oxidados", "code": "10.01.09-d. 1 pt", "context": "10.01.09-d. 1.0 pts. Puertas, anaqueles y componentes en buen estado (sin presencia de óxido, lámparas del interior flojas o con riesgo de caer, protección de ventilador dañado). Se penaliza a partir de 2 incumplimientos. / ID. 30113", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I131", "question": "Mobiliario o decoración desgastados afectan imagen tienda", "code": "10.01.11-a. 1 pt", "context": "10.01.11-a. 1.0 pts. Mobiliario y decoración se encuentran íntegras y en buen estado. A              partir de 3 con signos de desgaste que afecte la imagen de la tienda se penaliza. / ID. 30118", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I132", "question": "Pisos, paredes o techos dañados o deteriorados", "code": "10.01.11-b. 1 pt", "context": "10.01.11-b. 1.0 pts. Pisos, paredes, techos en buen estado libre de grietas, pintura desgastada (se penaliza a partir de 3 incumplimientos). Tapas para enchufe al servicio del cliente mal colocados o con falta de tapas (se penaliza a partir de 2 incumplimientos) / ID. 30119", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I133", "question": "Tres o más focos fundidos en áreas visibles", "code": "10.01.11-d. 1 pt", "context": "10.01.11-d. 1.0 pts. Iluminación en buen estado, se penaliza a partir de 3 focos fundidos en lobby y sanitarios. / ID. 30120", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I134", "question": "Sin comprobante mantenimiento trampa grasa o campanas", "code": "10.01.05-b. 1 pt", "context": "10.01.05-b. 1.0 pts. Comprobante mensual de servicio de mantenimiento preventivo a trampas de grasa y campanas de extracción. Se penaliza si no se muestra el comprobante / ID. 30096", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I135", "question": "Sin comprobante mantenimiento equipos purificación agua", "code": "10.01.05-c. 1 pt", "context": "10.01.05-c. 1.0 pts. Comprobante mensual de servicio de mantenimiento preventivo a equipos de purificación de agua. Se penaliza si no se muestra el comprobante / ID. 30097", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I136", "question": "Rejillas ventilación con suciedad o exceso polvo", "code": "10.01.04-b. 1 pt", "context": "10.01.04-b. 1.0 pts. Se observa limpieza en las rejillas de ventilación a un nivel superior a 2.5 m del suelo en donde el partner no alcance a limpiar (sin suciedad evidente o exceso de polvo). Se penaliza a partir de 1 incumplimiento / ID. 30094", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I137", "question": "Sanitarios o accesorios no funcionan correctamente", "code": "10.01.12-a. 1 pt", "context": "10.01.12-a. 1.0 pts. Los inodoros, mingitorios, lavamanos, grifo, bote de basura, cambiador y el espejo se mantienen funcionando, bien colocados, en buen estado. Puertas funcionando, con pasador o cerrojo. Se revisan 3 puertas aleatoriamente (si aplica). Se penaliza aunque se encuentre el letrero de \" NO FUNCIONA\". Se penaliza a partir de 1 incumplimiento / ID. 30123", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I138", "question": "Pisos, puertas o ventilaciones sanitarios dañados", "code": "10.01.12-c. 1 pt", "context": "10.01.12-c. 1.0 pts. Los pisos, las puertas, los cubículos, los zoclos, paredes, techo, las luces y las ventilaciones en buen estado. Sin grietas, huecos, azulejos faltantes, plafones mal acomodados, etc., que afecte la imagen de la tienda. Se penaliza a partir de 1 incumplimiento / ID. 30124", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I139", "question": "Fachada, toldos o letreros deteriorados o sucios", "code": "10.01.13-b. 1 pt", "context": "10.01.13-b. 1.0 pts. Fachada del edificio en buen estado, limpia y funcionando (toldos, sombrillas, menú exterior, poste de altura, letreros luminosos, etc.). Se penaliza en condiciones que den mal aspecto. Las sombrillas se penalizan con excretas de ave y exceso de polvo. No se evalúa decoloración por el sol en toldos y sombrillas. En caso de fallas de mantenimiento que sean propias del edificio en plazas comerciales no se evalúa en mantenimiento. Se penaliza a partir de 1 incumplimiento / ID. 30126", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}, {"id": "I140", "question": "Cisternas o tinacos sin protección adecuada", "code": "10.01.14-a. 1 pt", "context": "10.01.14-a. 1.0 pts. Cisternas y/o tinacos para almacenamiento de agua deben estar protegidos contra la contaminación y con tapadera con sellado completo, no deben de presentar exceso de sedimento en el interior o evidente suciedad en el agua. Las cisternas que están en exteriores deben contar con candado. Se penaliza a partir de 1 incumplimiento / ID. 30128", "points": 1, "icaText": "Resta 1 pts.", "semText": "No Cuenta En Semaforo", "category": "Menor ICA", "semCategory": "", "semCount": false, "section": "Menores ICA / No RSA", "requiresPhoto": false}];
+const FILTERS=['Todos','Crítico','Mayor','Menor','Riesgo Inminente','Mayor ICA','Menor ICA','No cumple','Con evidencia'];
+const state={status:{},notes:{},actions:{},owner:{},due:{},photos:{},query:'',filter:'Todos',ctx:new Set(),ev:new Set()};
+const $=id=>document.getElementById(id);
+function esc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
+function today(){const d=new Date();return d.toISOString().slice(0,10)}
+function hasEvidence(id){return (state.notes[id]&&state.notes[id].trim())||(state.actions[id]&&state.actions[id].trim())||(state.owner[id]&&state.owner[id].trim())||state.due[id]||(state.photos[id]&&state.photos[id].length)}
+function isExportable(i){return state.status[i.id]==='fail'||hasEvidence(i.id)}
+function badgeClass(cat){if(cat==='Crítico')return 'crit'; if(cat==='Mayor'||cat==='Mayor ICA')return 'may'; if(cat==='Menor'||cat==='Menor ICA')return 'men'; if(cat==='Riesgo Inminente')return 'risk'; return '';}
+function calc(){let crit=0,may=0,men=0,pts=0,ev=0,reviewed=0,fail=0; DATA.forEach(i=>{const st=state.status[i.id]; if(st) reviewed++; if(st==='fail'){fail++; pts+=Number(i.points||0); if(i.semCount){if(i.semCategory==='Critico')crit++; if(i.semCategory==='Mayor')may++; if(i.semCategory==='Menor')men++;}} if(hasEvidence(i.id))ev++; }); let rsa='🟢 CELEBRAR', cls=''; if(crit>=3||may>=5){rsa='🔴 APOYAR';cls='apoyar-bg'} else if(crit>=1||may>=3||men>=6){rsa='🟡 SUPERVISAR';cls='supervisar-bg'} $('icaScore').textContent=Math.max(0,100-pts); $('critCount').textContent=crit; $('mayCount').textContent=may; $('menCount').textContent=men; $('evCount').textContent=ev; const s=$('rsaStatus'); s.textContent=rsa; s.className='status '+cls; return {crit,may,men,pts,ev,reviewed,fail,rsa,ica:Math.max(0,100-pts)};}
+function makeFilters(){$('filters').innerHTML=FILTERS.map(f=>`<button class="chip ${state.filter===f?'active':''}" onclick="state.filter='${f}';render()">${f}</button>`).join('')}
+function passFilter(i){const q=state.query.toLowerCase().trim(); const st=state.status[i.id]; if(q && !(`${i.question} ${i.context} ${i.code} ${i.category}`.toLowerCase().includes(q))) return false; if(state.filter==='Todos')return true; if(state.filter==='No cumple')return st==='fail'; if(state.filter==='Con evidencia')return !!hasEvidence(i.id); return i.category===state.filter;}
+function statusLabel(st){return st==='comply'?'✅ Cumple':st==='fail'?'❌ No cumple':st==='na'?'➖ N/A':'Sin evaluar'}
+function render(){makeFilters(); const rows=DATA.filter(passFilter); const by={}; rows.forEach(i=>(by[i.section]=by[i.section]||[]).push(i)); let html=''; Object.keys(by).forEach(sec=>{const arr=by[sec]; html+=`<div class="section-title"><span>${esc(sec)}</span><span>${arr.length} puntos</span></div>`; arr.forEach(i=>html+=itemHtml(i));}); $('items').innerHTML=html; $('empty').style.display=rows.length?'none':'block'; calc();}
+function itemHtml(i){const st=state.status[i.id]||''; const openCtx=state.ctx.has(i.id); const openEv=state.ev.has(i.id)||st==='fail'||hasEvidence(i.id); const exportable=isExportable(i); const cls=['item',st,exportable?'exportable':''].join(' '); const photoPrev=(state.photos[i.id]||[]).map(src=>`<img src="${src}">`).join(''); return `<article class="${cls}" data-id="${i.id}">
+ <div class="item-head"><div><div class="question">${esc(i.question)}</div><div class="badges"><span class="badge ${badgeClass(i.category)}">${esc(i.category)}</span><span class="badge">-${i.points} pts ICA</span><span class="badge">${i.semCount?'RSA: '+(i.semCategory||'Cuenta'):'No cuenta RSA'}</span><span class="badge">${statusLabel(st)}</span></div>
+ <div class="actions"><button class="status-btn comply ${st==='comply'?'active':''}" onclick="setStatus('${i.id}','comply')">✅ Cumple</button><button class="status-btn fail ${st==='fail'?'active':''}" onclick="setStatus('${i.id}','fail')">❌ No cumple</button><button class="status-btn na ${st==='na'?'active':''}" onclick="setStatus('${i.id}','na')">➖ N/A</button><button class="mini-btn" onclick="toggleCtx('${i.id}')">Ver contexto</button><button class="mini-btn" onclick="toggleEv('${i.id}')">📷 Evidencia</button></div></div><div class="points">-${i.points} pts</div></div>
+ <div class="context ${openCtx?'open':''}"><b>Contexto de penalización:</b><br>${esc(i.context)}</div>
+ <div class="evidence ${openEv?'open':''}"><div class="evidence-grid"><div><label>Comentario / situación observada</label><textarea oninput="state.notes['${i.id}']=this.value;calc()" placeholder="Describe la desviación, cumplimiento relevante o corrección aplicada...">${esc(state.notes[i.id]||'')}</textarea></div><div><label>Acción correctiva / corrección</label><textarea oninput="state.actions['${i.id}']=this.value;calc()" placeholder="Qué se corrigió o qué acción queda pendiente...">${esc(state.actions[i.id]||'')}</textarea></div><div><label>Responsable</label><input type="text" value="${esc(state.owner[i.id]||'')}" oninput="state.owner['${i.id}']=this.value;calc()" placeholder="Nombre"><label style="margin-top:8px">Fecha compromiso</label><input type="date" value="${esc(state.due[i.id]||'')}" onchange="state.due['${i.id}']=this.value;calc()"><label style="margin-top:8px">Foto opcional</label><input type="file" accept="image/*" capture="environment" multiple onchange="loadPhotos('${i.id}',this.files)"><div class="preview">${photoPrev}</div></div></div></div>
+ </article>`;}
+function setStatus(id,st){state.status[id]=state.status[id]===st?'':st; if(st==='fail')state.ev.add(id); render();}
+function toggleCtx(id){state.ctx.has(id)?state.ctx.delete(id):state.ctx.add(id);render();}
+function toggleEv(id){state.ev.has(id)?state.ev.delete(id):state.ev.add(id);render();}
+function loadPhotos(id,files){state.photos[id]=state.photos[id]||[]; [...files].slice(0,6).forEach(file=>{const r=new FileReader(); r.onload=e=>{state.photos[id].push(e.target.result);state.ev.add(id);render();}; r.readAsDataURL(file);})}
+function exportPayload(){const c=calc(); return {tienda:$('store').value,auditor:$('auditor').value,fecha:$('date').value,turno:$('shift').value,resultado:c,registros:DATA.filter(isExportable).map(i=>({id:i.id,codigo:i.code,pregunta:i.question,categoria:i.category,estatus:statusLabel(state.status[i.id]),puntosICA:state.status[i.id]==='fail'?i.points:0,cuentaRSA:state.status[i.id]==='fail'&&i.semCount,tipoRSA:i.semCategory||'No cuenta',comentario:state.notes[i.id]||'',accion:state.actions[i.id]||'',responsable:state.owner[i.id]||'',fechaCompromiso:state.due[i.id]||'',fotos:state.photos[i.id]||[],contexto:i.context}))};}
+function exportJSON(){const payload=exportPayload(); if(!payload.registros.length) return alert('No hay penalizaciones ni evidencias para exportar.'); const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='rsa_digital_'+(payload.fecha||today())+'.json'; a.click(); URL.revokeObjectURL(a.href);}
+function printSmart(){if(!DATA.some(isExportable)) return alert('No hay penalizaciones ni evidencias para generar PDF.'); document.body.classList.add('pdf-mode'); setTimeout(()=>{window.print(); setTimeout(()=>document.body.classList.remove('pdf-mode'),300)},80)}
+$('date').value=today(); $('search').addEventListener('input',e=>{state.query=e.target.value;render();}); $('clearBtn').addEventListener('click',()=>{if(confirm('¿Limpiar selección y evidencias?')){state.status={};state.notes={};state.actions={};state.owner={};state.due={};state.photos={};state.ctx.clear();state.ev.clear();$('search').value='';state.query='';render();}}); $('printBtn').addEventListener('click',printSmart); $('exportBtn').addEventListener('click',exportJSON); render();
+</script>
 </body>
 </html>
