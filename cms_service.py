@@ -1,7 +1,9 @@
-"""Importa el Excel CMS, valida y actualiza atómicamente la base JSON."""
+"""Valida el Excel CMS y sincroniza todas las bases consumidas por el proyecto."""
 
 from __future__ import annotations
 
+import csv
+import io
 import json
 import os
 import shutil
@@ -16,6 +18,28 @@ from schema import (
     LOCATION_HEADERS, LOCATION_MAP, METRIC_HEADERS, METRIC_MAP,
     NUMBER_FIELDS, PERCENT_FIELDS,
 )
+
+LEGACY_HEADERS = [
+    "CC Nombre", "CC", "DM", "Fecha de Apertura", "Rolling", "TPLH", "IPLH",
+    "Labor", "Dif Labor%", "Ventas", "Dif ppto%", "OMT #", "NPS", "Conexión",
+    "Bebida", "CTC", "Costo", "Dif costo%", "EBITDA", "Dif EBITDA %", "DT Time",
+    "Tiempo DT AA", "Municipio o Delegación", "Cobertura", "Formato",
+    "Formato - Comercial", "TIER", "Corte YTD", "Latitud", "Longitud",
+]
+
+LEGACY_FIELDS = {
+    "CC Nombre": "store_name", "CC": "cc", "DM": "dm",
+    "Fecha de Apertura": "opening_date", "Rolling": "rolling_pct", "TPLH": "tplh",
+    "IPLH": "iplh", "Labor": "labor_pct", "Dif Labor%": "labor_variance_pct",
+    "Ventas": "sales_mxn", "Dif ppto%": "budget_variance_pct", "OMT #": "omt",
+    "NPS": "nps", "Conexión": "connection_pct", "Bebida": "beverage_pct",
+    "CTC": "ctc_pct", "Costo": "cost_pct", "Dif costo%": "cost_variance_pct",
+    "EBITDA": "ebitda_pct", "Dif EBITDA %": "ebitda_variance_pct",
+    "DT Time": "dt_time", "Tiempo DT AA": "dt_time_aa",
+    "Municipio o Delegación": "municipality", "Cobertura": "coverage",
+    "Formato": "format", "Formato - Comercial": "commercial_format", "TIER": "tier",
+    "Corte YTD": "cutoff_ytd", "Latitud": "latitude", "Longitud": "longitude",
+}
 
 
 class CMSValidationError(ValueError):
@@ -148,21 +172,111 @@ def workbook_to_payload(path: str | Path) -> dict[str, Any]:
     }
 
 
-def update_database(workbook_path: str | Path, database_path: str | Path) -> dict[str, Any]:
-    payload = workbook_to_payload(workbook_path)
-    database_path = Path(database_path)
-    database_path.parent.mkdir(parents=True, exist_ok=True)
-    if database_path.exists():
-        backup_dir = database_path.parent / "backups"
-        backup_dir.mkdir(exist_ok=True)
-        stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        shutil.copy2(database_path, backup_dir / f"stores_{stamp}.json")
-    fd, temporary = tempfile.mkstemp(prefix="stores_", suffix=".json", dir=database_path.parent)
+def _backup(path: Path) -> None:
+    if not path.exists():
+        return
+    backup_dir = path.parent / "backups"
+    backup_dir.mkdir(exist_ok=True)
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    shutil.copy2(path, backup_dir / f"{path.stem}_{stamp}{path.suffix}")
+
+
+def _atomic_write(path: Path, content: bytes, *, backup: bool = True) -> bool:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists() and path.read_bytes() == content:
+        return False
+    if backup:
+        _backup(path)
+    fd, temporary = tempfile.mkstemp(prefix=f"{path.stem}_", suffix=path.suffix, dir=path.parent)
     try:
-        with os.fdopen(fd, "w", encoding="utf-8") as handle:
-            json.dump(payload, handle, ensure_ascii=False, indent=2)
-        os.replace(temporary, database_path)
+        with os.fdopen(fd, "wb") as handle:
+            handle.write(content)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
     finally:
         if os.path.exists(temporary):
             os.unlink(temporary)
+    return True
+
+
+def _json_bytes(payload: dict[str, Any]) -> bytes:
+    return (json.dumps(payload, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+
+
+def _legacy_value(header: str, value: Any) -> str:
+    if value is None:
+        return "No hay valores" if header in {"DT Time", "Tiempo DT AA"} else ""
+    if header in {"Fecha de Apertura", "Corte YTD"}:
+        return datetime.strptime(str(value), "%Y-%m-%d").strftime("%d/%m/%Y")
+    if LEGACY_FIELDS[header] in PERCENT_FIELDS:
+        return f"{float(value):.2%}"
+    if header == "Ventas":
+        return f"${float(value) / 1_000_000:.1f}M"
+    if isinstance(value, float):
+        return f"{value:g}"
+    return str(value)
+
+
+def payload_to_csv_bytes(payload: dict[str, Any]) -> bytes:
+    stream = io.StringIO(newline="")
+    writer = csv.DictWriter(stream, fieldnames=LEGACY_HEADERS, lineterminator="\n")
+    writer.writeheader()
+    for store in sorted(payload["stores"], key=lambda item: str(item.get("cc") or "")):
+        writer.writerow({header: _legacy_value(header, store.get(field)) for header, field in LEGACY_FIELDS.items()})
+    return stream.getvalue().encode("utf-8-sig")
+
+
+def _current_stores(database_path: Path) -> list[dict[str, Any]] | None:
+    try:
+        return json.loads(database_path.read_text(encoding="utf-8"))["stores"]
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
+
+
+def synchronize_outputs(
+    workbook_path: str | Path,
+    database_path: str | Path,
+    legacy_csv_path: str | Path | None = None,
+    *,
+    dry_run: bool = False,
+) -> tuple[dict[str, Any], list[str]]:
+    """Sincroniza CMS→JSON/CSV; devuelve payload y archivos que cambian."""
+    payload = workbook_to_payload(workbook_path)
+    database_path = Path(database_path)
+    changed: list[str] = []
+    if _current_stores(database_path) != payload["stores"]:
+        changed.append(str(database_path))
+        if not dry_run:
+            _atomic_write(database_path, _json_bytes(payload))
+    if legacy_csv_path is not None:
+        csv_path = Path(legacy_csv_path)
+        csv_content = payload_to_csv_bytes(payload)
+        if not csv_path.exists() or csv_path.read_bytes() != csv_content:
+            changed.append(str(csv_path))
+            if not dry_run:
+                _atomic_write(csv_path, csv_content)
+    return payload, changed
+
+
+def apply_cms_workbook(
+    workbook_path: str | Path,
+    cms_path: str | Path,
+    database_path: str | Path,
+    legacy_csv_path: str | Path | None = None,
+) -> tuple[dict[str, Any], list[str]]:
+    """Instala el Excel validado y actualiza todos sus derivados."""
+    workbook_to_payload(workbook_path)
+    cms_path = Path(cms_path)
+    changed: list[str] = []
+    if _atomic_write(cms_path, Path(workbook_path).read_bytes()):
+        changed.append(str(cms_path))
+    payload, output_changes = synchronize_outputs(cms_path, database_path, legacy_csv_path)
+    changed.extend(output_changes)
+    return payload, changed
+
+
+def update_database(workbook_path: str | Path, database_path: str | Path) -> dict[str, Any]:
+    """Compatibilidad: actualiza solo JSON."""
+    payload, _ = synchronize_outputs(workbook_path, database_path)
     return payload

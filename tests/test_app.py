@@ -7,6 +7,7 @@ import urllib.request
 from pathlib import Path
 
 import app as application
+from cms_service import synchronize_outputs
 
 
 class AppTests(unittest.TestCase):
@@ -33,6 +34,9 @@ class AppTests(unittest.TestCase):
             payload=json.load(response)
         self.assertEqual(payload['metadata']['store_count'],len(payload['stores']))
         self.assertEqual(len(payload['stores']),72)
+        dm_by_cc={item['cc']:item['dm'] for item in payload['stores']}
+        self.assertEqual(dm_by_cc['38719'],'Veronica García')
+        self.assertEqual(dm_by_cc['38894'],'Enrique César')
 
     def test_downloads(self):
         with self.get('/descargar/cms') as response:
@@ -49,9 +53,19 @@ class AppTests(unittest.TestCase):
             'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\r\n\r\n'
         ).encode()+xlsx+f'\r\n--{boundary}--\r\n'.encode()
         with tempfile.TemporaryDirectory() as directory:
-            original=application.DATA_FILE
+            original=(application.DATA_FILE,application.CMS_FILE,application.LEGACY_CSV_FILE)
             application.DATA_FILE=Path(directory)/'stores.json'
-            shutil.copy2(original,application.DATA_FILE)
+            application.CMS_FILE=Path(directory)/'cms.xlsx'
+            application.LEGACY_CSV_FILE=Path(directory)/'data.csv'
+            shutil.copy2(original[0],application.DATA_FILE)
+            shutil.copy2(original[1],application.CMS_FILE)
+            shutil.copy2(original[2],application.LEGACY_CSV_FILE)
+            stale=json.loads(application.DATA_FILE.read_text(encoding='utf-8'))
+            stale_by_cc={item['cc']:item for item in stale['stores']}
+            stale_by_cc['38719']['dm']='Vanessa Carreño'
+            stale_by_cc['38894']['dm']='Nancy Rodríguez'
+            application.DATA_FILE.write_text(json.dumps(stale,ensure_ascii=False),encoding='utf-8')
+            application.LEGACY_CSV_FILE.write_text('base desactualizada',encoding='utf-8')
             try:
                 request=urllib.request.Request(f'http://127.0.0.1:{self.port}/administrar/importar',data=body,method='POST',headers={'Content-Type':f'multipart/form-data; boundary={boundary}'})
                 with urllib.request.urlopen(request) as response:
@@ -59,8 +73,31 @@ class AppTests(unittest.TestCase):
                 self.assertTrue(payload['ok'])
                 self.assertEqual(payload['metadata']['store_count'],72)
                 self.assertTrue((Path(directory)/'backups').is_dir())
+                self.assertEqual(application.CMS_FILE.read_bytes(),xlsx)
+                updated={item['cc']:item['dm'] for item in json.loads(application.DATA_FILE.read_text(encoding='utf-8'))['stores']}
+                self.assertEqual(updated['38719'],'Veronica García')
+                self.assertEqual(updated['38894'],'Enrique César')
             finally:
-                application.DATA_FILE=original
+                application.DATA_FILE,application.CMS_FILE,application.LEGACY_CSV_FILE=original
+
+    def test_direct_sync_fixes_dm_distribution(self):
+        with tempfile.TemporaryDirectory() as directory:
+            database=Path(directory)/'stores.json'
+            legacy=Path(directory)/'data.csv'
+            stale=json.loads(application.DATA_FILE.read_text(encoding='utf-8'))
+            by_cc={item['cc']:item for item in stale['stores']}
+            by_cc['38719']['dm']='Vanessa Carreño'
+            by_cc['38894']['dm']='Nancy Rodríguez'
+            database.write_text(json.dumps(stale,ensure_ascii=False),encoding='utf-8')
+            legacy.write_text('base desactualizada',encoding='utf-8')
+            payload,changed=synchronize_outputs(application.CMS_FILE,database,legacy)
+            self.assertEqual(len(changed),2)
+            corrected={item['cc']:item['dm'] for item in payload['stores']}
+            self.assertEqual(corrected['38719'],'Veronica García')
+            self.assertEqual(corrected['38894'],'Enrique César')
+            check_payload,pending=synchronize_outputs(application.CMS_FILE,database,legacy,dry_run=True)
+            self.assertEqual(pending,[])
+            self.assertEqual(check_payload['stores'],payload['stores'])
 
 
 if __name__=='__main__': unittest.main()

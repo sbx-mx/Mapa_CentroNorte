@@ -12,11 +12,12 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
 
-from cms_service import CMSValidationError, update_database
+from cms_service import CMSValidationError, apply_cms_workbook, synchronize_outputs
 
 BASE_DIR = Path(__file__).resolve().parent
 DATA_FILE = BASE_DIR / "data" / "stores.json"
 CMS_FILE = BASE_DIR / "cms" / "Mapa_CentroNorte_CMS.xlsx"
+LEGACY_CSV_FILE = BASE_DIR / "data.csv"
 MAX_UPLOAD = 15 * 1024 * 1024
 
 
@@ -68,7 +69,7 @@ def parse_multipart(content_type: str, body: bytes) -> dict[str, dict]:
 
 
 class AppHandler(BaseHTTPRequestHandler):
-    server_version = "CentroNorteCMS/2.0"
+    server_version = "CentroNorteCMS/2.1"
 
     def log_message(self, fmt, *args):
         print(f"{self.address_string()} - {fmt % args}")
@@ -139,15 +140,25 @@ class AppHandler(BaseHTTPRequestHandler):
         with tempfile.NamedTemporaryFile(suffix=".xlsx") as temporary:
             temporary.write(upload.get("content", b"")); temporary.flush()
             try:
-                payload = update_database(temporary.name, DATA_FILE)
+                payload, changed = apply_cms_workbook(temporary.name, CMS_FILE, DATA_FILE, LEGACY_CSV_FILE)
             except CMSValidationError as exc:
                 self.send_json({"ok": False, "errors": exc.errors}, 422); return
+            except OSError:
+                self.send_json({"ok": False, "errors": ["El Excel es válido, pero no fue posible escribir las bases."]}, 500); return
             except Exception:
                 self.send_json({"ok": False, "errors": ["El archivo no es un Excel válido."]}, 400); return
-        self.send_json({"ok": True, "message": f"Base actualizada: {len(payload['stores'])} tiendas.", "metadata": payload["metadata"]})
+        self.send_json({"ok": True, "message": f"CMS y bases actualizados: {len(payload['stores'])} tiendas.", "metadata": payload["metadata"], "changed_files": len(changed)})
 
 
 def create_server(host: str = "127.0.0.1", port: int = 8000) -> ThreadingHTTPServer:
+    try:
+        _, changed = synchronize_outputs(CMS_FILE, DATA_FILE, LEGACY_CSV_FILE)
+        if changed:
+            print(f"Sincronización CMS aplicada: {len(changed)} archivo(s).")
+    except CMSValidationError as exc:
+        print("Aviso: CMS inválido; se conserva la última base válida: " + "; ".join(exc.errors))
+    except OSError as exc:
+        print(f"Aviso: no fue posible sincronizar al iniciar; se conserva la última base válida: {exc}")
     return ThreadingHTTPServer((host, port), AppHandler)
 
 
